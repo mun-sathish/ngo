@@ -49,10 +49,10 @@ $app->post('/user/signup', function(Request $request, Response $response){
         $stmt->bindParam(':email', $email);
 
         $stmt->execute();
-        showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_SIGNUP);
+        return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_SIGNUP);
 
     } catch(PDOException $e){
-        showOutput(STATUS::$_C_SIGNUP_FAILURE_PDOEXCEPTION, STATUS::$_M_SIGNUP_FAILURE_PDOEXCEPTION . $e->getMessage());
+        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
     }
 });
 
@@ -129,7 +129,7 @@ $app->post('/user/update', function(Request $request, Response $response){
         return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_USER_UPDATED);
         
     } catch(PDOException $e){
-       return showOutput(STATUS::$_C_USER_UPDATE_FAILURE_PDOEXCEPTION, STATUS::$_M_USER_UPDATE_FAILURE_PDOEXCEPTION . $e->getMessage());
+       return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
     }
 });
 
@@ -159,7 +159,7 @@ $app->post('/user/signin', function(Request $request, Response $response){
             return showOutputWithRes(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_SIGNIN, $res[0]);
 
     } catch(PDOException $e){
-        showOutput(STATUS::$_C_SIGNIN_FAILURE_PDOEXCEPTION, STATUS::$_M_SIGNIN_FAILURE_PDOEXCEPTION . $e->getMessage());
+        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
     }
 });
 
@@ -176,7 +176,7 @@ $app->get('/security-question', function(Request $request, Response $response){
         $db = null;
         echo json_encode($customers);
     } catch(PDOException $e){
-        showOutput(STATUS::$_C_SECURITY_QUES_PDOEXCEPTION, STATUS::$_M_SECURITY_QUES_PDOEXCEPTION . $e->getMessage());
+        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
     }
 });
 
@@ -194,7 +194,7 @@ $app->get('/security-question/{id}', function(Request $request, Response $respon
         $db = null;
         echo json_encode($customers);
     } catch(PDOException $e){
-        showOutput(STATUS::$_C_SECURITY_QUES_PDOEXCEPTION, STATUS::$_M_SECURITY_QUES_PDOEXCEPTION . $e->getMessage());
+        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
     }
 });
 
@@ -220,6 +220,6 @@ $app->post('/security-question/add', function(Request $request, Response $respon
         echo '{"notice": {"text": "Customer Added"}';
 
     } catch(PDOException $e){
-        showOutput(STATUS::$_C_SECURITY_QUES_PDOEXCEPTION, STATUS::$_M_SECURITY_QUES_PDOEXCEPTION . $e->getMessage());
+        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
     }
 });

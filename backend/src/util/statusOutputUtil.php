@@ -6,7 +6,7 @@
         $obj = new stdClass();
         $obj->statusCode = $statusCode;
         $obj->statusMessage=$statusMessage;
-        echo json_encode($obj);
+        return json_encode($obj);
     }
     
      function showOutputWithRes($statusCode, $statusMessage, $resource){
@@ -14,7 +14,7 @@
         $obj->statusCode = $statusCode;
         $obj->statusMessage=$statusMessage;
         $obj->res=$resource;
-        echo json_encode($obj);
+        return json_encode($obj);
     }
 
 
