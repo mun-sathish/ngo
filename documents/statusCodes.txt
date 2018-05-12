@@ -1,0 +1,11 @@
+Generic Message Model:
+{
+    statusCode: 
+    statusMessage:
+}
+
+=================================
+
+0 - success
+1 - LoginFailure
+2 - SignUp Failure

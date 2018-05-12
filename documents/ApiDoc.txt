@@ -1,0 +1,70 @@
+loginController.php
+-----------------------
+POST /user/login
+    - I-FIELDS: username, password
+    - O-FIELDS: success/failure, token, expiry time
+POST /user/signup
+    - I-FIELDS: username, password, phone, security_question,  security_question_answer,email, adddress (optional)
+    - O-FIELDS: success/failure, token, expiry time
+POST /user/update
+
+GET /security-question
+GET /security_question/{id}
+POST /security-question/add 
+    - I-FIELDS: question
+
+
+=====================================================
+NOTE: Authorization Header should contain token for remaining requests
+=====================================================
+
+---------------------------
+resourceController.php 
+----------------------------
+GET /resource/book
+GET /resource/audio
+GET /resource/video
+
+GET /resource/book/{book_id}
+GET /resource/audio/{audio_id}
+GET /resource/video/{video_id}
+
+(ADMIN)
+POST /resource/book/add
+POST /resource/audio/add
+POST /resource/video/
+
+------------------------------------
+resourceAccessController.php
+------------------------------------
+
+POST /resource/audio/access/add
+    - I-FIELDS: user_login_id, audio_id
+POST /resource/audio/access/
+    - I-FIELDS: user_login_id
+    - O-FIELDS: all audio of user_login_id
+
+POST /resource/video/access/add
+    - I-FIELDS: user_login_id, video_id
+POST /resource/video/access/
+    - I-FIELDS: user_login_id
+    - O-FIELDS: all video of user_login_id
+
+POST /resource/book/access/add
+    - I-FIELDS: user_login_id, book_id
+POST /resource/book/access/
+    - I-FIELDS: user_login_id
+    - O-FIELDS: all books of user_login_id
+
+----------------------------
+feedbackController.php
+----------------------------
+
+GET /resource/audio/{audio_id}/feedback
+    - O-FIELDS: all feedbacks of that audio
+GET /resource/video/{video_id}/feedback
+GET /resource/book/{books_id}/feedback
+
+POST /resource/audio/feedback/add
+POST /resource/video/feedback/add
+POST /resource/book/feedback/add

@@ -1,0 +1,11 @@
+1.*App Name* (This is android application name which will be given. You can think of the name related to your NGO)
+2. *Website Name* (MOstly try to provide the NGO name /  or any specific name. Eg: www.greaterminds.com NOTE: Cant gurantee that the name will be available... So better try to provide some 5 different website names.)
+3. *Vision* - (How do you see your application/NGO to be in future. *[Elaborated manner]* )
+4. *Mission* - (What is main purpose of starting this / What is goal of this app/NGO *[Elaborated manner]*  )
+5. *Theme* - If you had any expectations (Eg. Facebook uses Blue and White Combination ]
+6. What are the stuff which will be selled to the customer & specify what can kind of stuff it is like audio, text file, etc.. ??? (Eg. Recorded Speeches in *audio file*, etc..)
+6. *Expected Features* : [Mention all features in points in a Elaborated mannter - VERY IMPORTANT. App will be created based on this explanation] 
+(Eg.
+-  I want a login and sign up for user to access the app.
+- I want my music to be shared only with particular people
+- I want seperate place where i can see who can i share, etc... )

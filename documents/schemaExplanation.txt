@@ -1,0 +1,96 @@
+// https://www.dbdesigner.net/designer/schema/170799
+
+Database Name:
+    - NGO
+
+Table Name:
+    - USER_LOGIN 
+        - user_login_id (PRI)
+        - username (UNIQUE)
+        - old_password
+        - password
+        - security_question
+        - security_question_answer
+        - is_premium (BOOLEAN)
+    - SECURITY_QUESTION ( populates only questions to show on login)
+        - security_question_id (PRI)
+        - question (UNIQUE)
+    - USER_ADDRESS_DETAILS
+        - user_address_details_id (PRI)
+        - user_login_id (FK - USER_LOGIN)
+        - address1
+        - address2
+        - city
+        - state
+    - USER_PROFILE_DETAILS
+        - user_profile_details_id (PRI)
+        - user_login_id (FK - USER_LOGIN)
+        - phone (NUMBER)
+        - email
+    - USER_ACCESS_AUDIO
+        - user_access_audio_id (PRI)
+        - user_login_id (FK - USER_LOGIN)
+        - audio_id (FK - AUDIO)
+    - USER_ACCESS_VIDEO
+        - user_access_video_id (PRI)
+        - user_login_id (FK - USER_LOGIN)
+        - video_id (FK - VIDEO)
+    - USER_ACCESS_BOOK
+        - user_access_book_id (PRI)
+        - user_login_id (FK - USER_LOGIN)
+        - book_id (FK - BOOK)
+
+    // admin_related_tables
+    - AUDIO
+        - audio_id (PRI)
+        - title
+        - author
+        - genre
+        - speaker
+        - price (NUMBER)
+        - discount (NUMBER - percentage)
+        - is_premium (BOOLEAN)
+        - is_free (BOOLEAN)
+        - banner (BLOB - image file)
+        - file (BLOB)
+    - VIDEO
+        - video_id (PRI)
+        - title
+        - author
+        - cast
+        - genre
+        - price (NUMBER)
+        - discount (NUMBER - percentage)
+        - is_premium (BOOLEAN)
+        - is_free (BOOLEAN)
+        - banner (BLOB - image file)
+        - file (BLOB)
+    - BOOK
+        - book_id
+        - name 
+        - isbn
+        - author
+        - publisher
+        - edition
+        - edition_number
+        - no_of_pages
+        - binding
+        - flipkart_link
+        - amazon_link
+        - banner (BLOB - image file)
+    - AUDIO_FEEDBACK
+        - audio_feedback_id (PRI)
+        - audio_id (FK  - AUDIO)
+        - feedback
+        - rating (NUMBER - range 1 to 5)
+    - VIDEO_FEEDBACK
+        - video_feedback_id (PRI)
+        - video_id (FK  - VIDEO)
+        - feedback
+        - rating (NUMBER - range 1 to 5)
+    - BOOK_FEEDBACK
+        - book_feedback_id (PRI)
+        - book_id (FK  - BOOK)
+        - feedback
+        - rating (NUMBER - range 1 to 5)
+        
