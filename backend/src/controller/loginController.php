@@ -141,7 +141,7 @@ $app->post('/user/signin', function(Request $request, Response $response){
     
     if($username === NULL || $password === NULL)
     {
-        return showOutput(STATUS::$_C_SIGNIN_FAILURE_INPUT_UNAVAILABLE, STATUS::$_M_SIGNIN_FAILURE_INPUT_UNAVAILABLE);
+       return $response->write(showOutput(STATUS::$_C_SIGNIN_FAILURE_INPUT_UNAVAILABLE, STATUS::$_M_SIGNIN_FAILURE_INPUT_UNAVAILABLE));
     }
 
     $sql = "SELECT * FROM USER_LOGIN where username = '$username' and password ='$password'";
@@ -153,13 +153,13 @@ $app->post('/user/signin', function(Request $request, Response $response){
         $db = $db->connect();
         $stmt = $db->query($sql);
         $res = $stmt->fetchAll(PDO::FETCH_OBJ);
-        if($res[0] === NULL)
-            return showOutput(STATUS::$_C_SIGNIN_FAILURE_INVALID_CRED, STATUS::$_M_SIGNIN_FAILURE_INVALID_CRED);
+        if(!isset($res[0]))
+            return $response->write(showOutput(STATUS::$_C_SIGNIN_FAILURE_INVALID_CRED, STATUS::$_M_SIGNIN_FAILURE_INVALID_CRED));
         else
-            return showOutputWithRes(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_SIGNIN, $res[0]);
+            return $response->write(showOutputWithRes(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_SIGNIN, $res[0]));
 
     } catch(PDOException $e){
-        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
+        return $response->write(showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage()));
     }
 });
 
@@ -219,6 +219,23 @@ $app->post('/security-question/add', function(Request $request, Response $respon
 
         echo '{"notice": {"text": "Customer Added"}';
 
+    } catch(PDOException $e){
+        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
+    }
+});
+
+// Get Security Question By ID
+$app->post('/security-question/delete/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+    $sql = "DELETE FROM security_question WHERE security_question_id = $id";
+    try{
+        // Get DB Object
+        $db = new databaseConnector();
+        // Connect
+        $db = $db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->execute();
+        return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_SIGNIN);
     } catch(PDOException $e){
         return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
     }
