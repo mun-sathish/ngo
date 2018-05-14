@@ -12,6 +12,51 @@ const dispatchHandler = store => next => action => {
                 });
                 break;
 
+                // RESOURCES
+                case ACTION.BOOK_ADD:
+                sendReq(REQ.BOOK_ADD.URI, REQ.BOOK_ADD.METHOD, action.payload)
+                .then(jsonResponse => {
+                    return next(action)
+                })
+                break;
+
+            case ACTION.AUDIO_ADD:
+                sendReq(REQ.AUDIO_ADD.URI, REQ.AUDIO_ADD.METHOD, action.payload)
+                    .then(jsonResponse => {
+                        return next(action)
+                    })
+            break;
+
+            case ACTION.VIDEO_ADD:
+                sendReq(REQ.VIDEO_ADD.URI, REQ.VIDEO_ADD.METHOD, action.payload)
+                    .then(jsonResponse => {
+                        return next(action)
+                    })
+            break;
+
+        case ACTION.BOOK:
+            sendReq(REQ.BOOK_ALL.URI, REQ.BOOK_ALL.METHOD, null)
+                .then(jsonResponse => {
+                    action.payload = jsonResponse
+                    return next(action)
+                })
+            break;
+
+        case ACTION.AUDIO:
+            sendReq(REQ.AUDIO_ALL.URI, REQ.AUDIO_ALL.METHOD, null)
+                .then(jsonResponse => {
+                    action.payload = jsonResponse
+                    return next(action)
+                })
+            break;
+            
+        case ACTION.VIDEO:
+            sendReq(REQ.VIDEO_ALL.URI, REQ.VIDEO_ALL.METHOD, null)
+                .then(jsonResponse => {
+                    action.payload = jsonResponse
+                    return next(action)
+                })
+            break;
             // SECUIRTY_QUESTION
             case ACTION.SQ: 
                 sendReq(REQ.SQ_ALL.URI, REQ.SQ_ALL.METHOD, null)
@@ -38,7 +83,7 @@ const dispatchHandler = store => next => action => {
     }
 
     // let ret = next(action);
-    console.log(action)
+    // console.log(action)
     // return ret;
 };
 export default dispatchHandler;

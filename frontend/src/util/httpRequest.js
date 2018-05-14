@@ -1,4 +1,7 @@
 export default function sendReq(uri, reqMethod, reqData) {
+    console.log("URL: " + uri + ", Method: " + reqMethod)
+    console.log(reqData);
+    
     if(reqMethod === "get")
     {
         return fetch(uri, {
@@ -25,6 +28,7 @@ export default function sendReq(uri, reqMethod, reqData) {
             .then((response) => response.json())
             .catch((err) => {
                 console.log(err)
+                return Promise.reject();
             })
     }
     

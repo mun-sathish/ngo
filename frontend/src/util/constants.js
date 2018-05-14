@@ -4,6 +4,13 @@ export  const ACTION = {
     SQ_ADD: "security_question_add",
     SQ_UPDATE: "security_question_update",
     SQ_DELETE: "security_question_delete",
+
+    BOOK_ADD: "books_add",
+    BOOK: "books",
+    AUDIO_ADD: "audio_add",
+    AUDIO: "audio",
+    VIDEO_ADD: "video_add",
+    VIDEO: "video"
 }
 
 const BASE_URI = "http://ngo.com"
@@ -12,17 +19,29 @@ export const REQ = {
         URI: BASE_URI + "/user/signin",
         METHOD : "post"
     },
-    ADD_BOOK : {
+    BOOK_ADD : {
         URI: BASE_URI + "/resource/book/add",
         METHOD : "post"
     },
-    ADD_AUDIO: {
+    AUDIO_ADD: {
         URI: BASE_URI + "/resource/audio/add",
         METHOD: "post"
     },
-    ADD_VIDEO: {
+    VIDEO_ADD: {
         URI: BASE_URI + "/resource/video/add",
         METHOD: "post"
+    },
+    BOOK_ALL : {
+        URI: BASE_URI + "/resource/book",
+        METHOD: "get"
+    },
+    AUDIO_ALL: {
+        URI: BASE_URI + "/resource/audio",
+        METHOD: "get"
+    },
+    VIDEO_ALL: {
+        URI: BASE_URI + "/resource/video",
+        METHOD: "get"
     },
 
     SQ_ALL : {
