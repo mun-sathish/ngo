@@ -13,7 +13,7 @@ export  const ACTION = {
     VIDEO: "video"
 }
 
-const BASE_URI = "http://ngo.com"
+const BASE_URI = "http://ngo.com/api"
 export const REQ = {
     USER_LOGIN : {
         URI: BASE_URI + "/user/signin",
@@ -36,11 +36,11 @@ export const REQ = {
         METHOD: "get"
     },
     AUDIO_ALL: {
-        URI: BASE_URI + "/resource/audio",
+        URI: BASE_URI + "/resource/audio/admin",
         METHOD: "get"
     },
     VIDEO_ALL: {
-        URI: BASE_URI + "/resource/video",
+        URI: BASE_URI + "/resource/video/admin",
         METHOD: "get"
     },
 

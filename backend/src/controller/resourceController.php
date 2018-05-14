@@ -14,7 +14,7 @@ function getRequest($sql, $isById) {
             $db = null;
             if($isById)
                 if(!isset($res[0]))
-                    return "[]";
+                    return "{}";
                 else
                     return json_encode($res[0]);
             else
@@ -49,48 +49,90 @@ function postRequest2($stmt) {
         }
 }
 
+
 // Get All Books
-$app->get('/resource/book', function(Request $request, Response $response){
+$app->get('/api/resource/book', function(Request $request, Response $response){
     $sql = "SELECT * FROM BOOK";
     return getRequest($sql, false);
 });
 
 // Get All Video
-$app->get('/resource/video', function(Request $request, Response $response){
-    $sql = "SELECT * FROM VIDEO";
+$app->get('/api/resource/video', function(Request $request, Response $response){
+    $sql = "SELECT video.*, video_blob.file
+                FROM video
+                INNER JOIN video_blob ON video.video_id=video_blob.video_id";
+    
+    return getRequest($sql, false);
+});
+
+// Get All Video for ADMIN
+$app->get('/api/resource/video/admin', function(Request $request, Response $response){
+    $sql = "SELECT video.*, video_blob.file
+                FROM video
+                LEFT OUTER JOIN video_blob ON video.video_id=video_blob.video_id";
+    
     return getRequest($sql, false);
 });
 
 // Get All Audio
-$app->get('/resource/audio', function(Request $request, Response $response){
-    $sql = "SELECT * FROM AUDIO";
+$app->get('/api/resource/audio', function(Request $request, Response $response){
+    $sql = "SELECT audio.*, audio_blob.file
+                FROM audio
+                INNER JOIN audio_blob ON audio.audio_id=audio_blob.audio_id";
+    return getRequest($sql, false);
+});
+
+// Get All Audio for ADMIN
+$app->get('/api/resource/audio/admin', function(Request $request, Response $response){
+    $sql = "SELECT audio.*, audio_blob.file
+                FROM audio
+                LEFT OUTER JOIN audio_blob ON audio.audio_id=audio_blob.audio_id";
     return getRequest($sql, false);
 });
 
 // Get Book By ID
-$app->get('/resource/book/{id}', function(Request $request, Response $response){
+$app->get('/api/resource/book/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
     $sql = "SELECT * FROM BOOK WHERE book_id = $id";
     return getRequest($sql, true);
 });
 
 // Get Video By ID
-$app->get('/resource/video/{id}', function(Request $request, Response $response){
+$app->get('/api/resource/video/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
     $sql = "SELECT * FROM VIDEO WHERE video_id = $id";
     return getRequest($sql, true);
 });
 
+// Get Video Blob By ID
+$app->get('/api/resource/video/blob/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+    $sql = "SELECT video_blob.file
+                FROM video
+                INNER JOIN video_blob ON video.video_id=video_blob.video_id
+                WHERE video_blob.video_id = $id";
+    return getRequest($sql, true);
+});
+
 // Get Audio By ID
-$app->get('/resource/audio/{id}', function(Request $request, Response $response){
+$app->get('/api/resource/audio/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
     $sql = "SELECT * FROM AUDIO WHERE audio_id = $id";
     return getRequest($sql, true);
 });
 
+// Get Audio Blob By ID
+$app->get('/api/resource/audio/blob/{id}', function(Request $request, Response $response){
+    $id = $request->getAttribute('id');
+    $sql = "SELECT audio_blob.file
+                FROM audio
+                INNER JOIN audio_blob ON audio.audio_id=audio_blob.audio_id
+                WHERE audio_blob.audio_id = $id";
+    return getRequest($sql, true);
+});
 
 // Adding Audio
-$app->post('/resource/audio/add', function(Request $request, Response $response){
+$app->post('/api/resource/audio/add', function(Request $request, Response $response){
     $title = $request->getParam('title');
     $author = $request->getParam('author');
     $genre = $request->getParam('genre');
@@ -102,28 +144,46 @@ $app->post('/resource/audio/add', function(Request $request, Response $response)
     $banner = $request->getParam('banner');
     $file = $request->getParam('file');
 
-    $sql = "INSERT INTO AUDIO (title, author, genre, speaker, price, discount, is_premium, is_free, banner, file) VALUES (:title, :author, :genre, :speaker, :price, :discount, :is_premium, :is_free, :banner, :file)";
-   
-    $stmt = postRequest1($sql);
-    if(isset($stmt->statusCode) && isset($stmt->statusMessage))
-        return $stmt;
-    
-    $stmt->bindParam(':title', $title);
-    $stmt->bindParam(':author', $author);
-    $stmt->bindParam(':genre', $genre);
-    $stmt->bindParam(':speaker', $speaker);
-    $stmt->bindParam(':price', $price);
-    $stmt->bindParam(':discount', $discount);
-    $stmt->bindParam(':is_premium', $is_premium);
-    $stmt->bindParam(':is_free', $is_free);
-    $stmt->bindParam(':banner', $banner);
-    $stmt->bindParam(':file', $file);
+    $sql1 = "INSERT INTO AUDIO (title, author, genre, speaker, price, discount, is_premium, is_free, banner) VALUES (:title, :author, :genre, :speaker, :price, :discount, :is_premium, :is_free, :banner)  ";
 
-    return postRequest2($stmt);
+    $sql2 = "INSERT INTO AUDIO_BLOB (audio_id, file) VALUES (:audio_id, :file)";
+   
+
+    try{
+            // Get DB Object
+            $db = new databaseConnector();
+            // Connect
+            $db = $db->connect();
+
+            $stmt = $db->prepare($sql1);
+
+            $stmt->bindParam(':title', $title);
+            $stmt->bindParam(':author', $author);
+            $stmt->bindParam(':genre', $genre);
+            $stmt->bindParam(':speaker', $speaker);
+            $stmt->bindParam(':price', $price);
+            $stmt->bindParam(':discount', $discount);
+            $stmt->bindParam(':is_premium', $is_premium);
+            $stmt->bindParam(':is_free', $is_free);
+            $stmt->bindParam(':banner', $banner);
+
+            $stmt->execute();
+
+            $stmt = $db->prepare($sql2);
+            $resId = $db->lastInsertId();
+            $stmt->bindParam(':audio_id', $resId);
+            $stmt->bindParam(':file', $file);
+            $stmt->execute();
+
+            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_RESOURCE_ADDED);
+
+        } catch(PDOException $e){
+            return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
+        }
 });
 
 // Adding Video
-$app->post('/resource/video/add', function(Request $request, Response $response){
+$app->post('/api/resource/video/add', function(Request $request, Response $response){
     $title = $request->getParam('title');
     $author = $request->getParam('author');
     $genre = $request->getParam('genre');
@@ -135,28 +195,46 @@ $app->post('/resource/video/add', function(Request $request, Response $response)
     $banner = $request->getParam('banner');
     $file = $request->getParam('file');
 
-    $sql = "INSERT INTO VIDEO (title, author, genre, cast, price, discount, is_premium, is_free, banner, file) VALUES (:title, :author, :genre, :cast, :price, :discount, :is_premium, :is_free, :banner, :file)";
-   
-    $stmt = postRequest1($sql);
-    if(isset($stmt->statusCode) && isset($stmt->statusMessage))
-        return $stmt;
-    
-    $stmt->bindParam(':title', $title);
-    $stmt->bindParam(':author', $author);
-    $stmt->bindParam(':genre', $genre);
-    $stmt->bindParam(':speaker', $cast);
-    $stmt->bindParam(':price', $price);
-    $stmt->bindParam(':discount', $discount);
-    $stmt->bindParam(':is_premium', $is_premium);
-    $stmt->bindParam(':is_free', $is_free);
-    $stmt->bindParam(':banner', $banner);
-    $stmt->bindParam(':file', $file);
+    $sql1 = "INSERT INTO VIDEO (title, author, cast, genre, price, discount, is_premium, is_free, banner) VALUES (:title, :author, :cast, :genre, :price, :discount, :is_premium, :is_free, :banner)";
 
-    return postRequest2($stmt);
+    $sql2 = "INSERT INTO VIDEO_BLOB (video_id, file) VALUES (:video_id, :file)";
+
+    try{
+            // Get DB Object
+            $db = new databaseConnector();
+            // Connect
+            $db = $db->connect();
+
+            $stmt = $db->prepare($sql1);
+    
+            $stmt->bindParam(':title', $title);
+            $stmt->bindParam(':author', $author);
+            $stmt->bindParam(':genre', $genre);
+            $stmt->bindParam(':cast', $cast);
+            $stmt->bindParam(':price', $price);
+            $stmt->bindParam(':discount', $discount);
+            $stmt->bindParam(':is_premium', $is_premium);
+            $stmt->bindParam(':is_free', $is_free);
+            $stmt->bindParam(':banner', $banner);
+
+            $stmt->execute();
+            // $resId = $db->lastInsertId();
+
+            // $stmt = $db->prepare($sql2);
+            // $stmt->bindParam(':video_id', $resId);
+            // $stmt->bindParam(':file', $file);
+            // $stmt->execute();
+
+            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_RESOURCE_ADDED);
+
+        } catch(PDOException $e){
+            return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
+        }
+
 });
 
 // Adding Book
-$app->post('/resource/book/add', function(Request $request, Response $response){
+$app->post('/api/resource/book/add', function(Request $request, Response $response){
     $name = $request->getParam('name');
     $author = $request->getParam('author');
     $isbn = $request->getParam('isbn');

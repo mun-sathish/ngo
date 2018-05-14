@@ -59,9 +59,11 @@ class Book extends React.Component {
     } 
     
     handleClick = (e) => {
-        // console.log(this.state);
-        for (const key of Object.keys(this.state)) {
-            console.log(key, this.state[key]);
+        let tempState = this.state
+        for (const key of Object.keys(tempState)) {
+            if (typeof tempState[key] === "string")
+                if (tempState[key].length === 0)
+                    tempState[key] = "_blank"
         }
         this.props.addBook(this.state);
     }

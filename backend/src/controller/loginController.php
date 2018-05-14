@@ -16,7 +16,7 @@ require '../src/util/statusVariables.php';
 	"email" : "mun.sathish@gmail.com"
 }
 */
-$app->post('/user/signup', function(Request $request, Response $response){
+$app->post('/api/user/signup', function(Request $request, Response $response){
 
     $username = $request->getParam('username');
     $name = $request->getParam('name');
@@ -57,7 +57,7 @@ $app->post('/user/signup', function(Request $request, Response $response){
 });
 
 // User Update
-$app->post('/user/update', function(Request $request, Response $response){
+$app->post('/api/user/update', function(Request $request, Response $response){
     
     $username = $request->getParam('username');
     $password = $request->getParam('password');
@@ -134,7 +134,7 @@ $app->post('/user/update', function(Request $request, Response $response){
 });
 
 //User Sign In
-$app->post('/user/signin', function(Request $request, Response $response){
+$app->post('/api/user/signin', function(Request $request, Response $response){
 
     $username = $request->getParam('username');
     $password = $request->getParam('password');
@@ -164,7 +164,7 @@ $app->post('/user/signin', function(Request $request, Response $response){
 });
 
 // Get All Secuity Questions
-$app->get('/security-question', function(Request $request, Response $response){
+$app->get('/api/security-question', function(Request $request, Response $response){
     $sql = "SELECT * FROM security_question";
     try{
         // Get DB Object
@@ -181,7 +181,7 @@ $app->get('/security-question', function(Request $request, Response $response){
 });
 
 // Get Security Question By ID
-$app->get('/security-question/{id}', function(Request $request, Response $response){
+$app->get('/api/security-question/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
     $sql = "SELECT * FROM security_question WHERE security_question_id = $id";
     try{
@@ -199,7 +199,7 @@ $app->get('/security-question/{id}', function(Request $request, Response $respon
 });
 
 // Adding Security Question
-$app->post('/security-question/add', function(Request $request, Response $response){
+$app->post('/api/security-question/add', function(Request $request, Response $response){
     $question = $request->getParam('question');
 
     $sql = "INSERT INTO security_question (question) VALUES
@@ -225,7 +225,7 @@ $app->post('/security-question/add', function(Request $request, Response $respon
 });
 
 // Get Security Question By ID
-$app->post('/security-question/delete/{id}', function(Request $request, Response $response){
+$app->post('/api/security-question/delete/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
     $sql = "DELETE FROM security_question WHERE security_question_id = $id";
     try{

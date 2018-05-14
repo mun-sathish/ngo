@@ -43,7 +43,7 @@ function postAccessRequest2($stmt) {
 }
 
 // Get All Audio by User ID
-$app->get('/resource/audio/access/{user_login_id}', function(Request $request, Response $response){
+$app->get('/api/resource/audio/access/{user_login_id}', function(Request $request, Response $response){
     $user_login_id = $request->getAttribute('user_login_id');
     $sql = "SELECT a.* FROM AUDIO a, USER_ACCESS_AUDIO u, USER_LOGIN ul 
                 WHERE ul.user_login_id = u.user_login_id and a.audio_id = u.audio_id and ul.user_login_id = $user_login_id";
@@ -51,7 +51,7 @@ $app->get('/resource/audio/access/{user_login_id}', function(Request $request, R
 });
 
 // Get All Video by User ID
-$app->get('/resource/video/access/{user_login_id}', function(Request $request, Response $response){
+$app->get('/api/resource/video/access/{user_login_id}', function(Request $request, Response $response){
     $user_login_id = $request->getAttribute('user_login_id');
     $sql = "SELECT a.* FROM VIDEO a, USER_ACCESS_VIDEO u, USER_LOGIN ul 
                 WHERE ul.user_login_id = u.user_login_id and a.video_id = u.video_id and ul.user_login_id = $user_login_id";
@@ -59,7 +59,7 @@ $app->get('/resource/video/access/{user_login_id}', function(Request $request, R
 });
 
 // Get All Book by User ID
-$app->get('/resource/book/access/{user_login_id}', function(Request $request, Response $response){
+$app->get('/api/resource/book/access/{user_login_id}', function(Request $request, Response $response){
     $user_login_id = $request->getAttribute('user_login_id');
     $sql = "SELECT a.* FROM BOOK a, USER_ACCESS_BOOK u, USER_LOGIN ul 
                 WHERE ul.user_login_id = u.user_login_id and a.book_id = u.book_id and ul.user_login_id = $user_login_id";
@@ -68,7 +68,7 @@ $app->get('/resource/book/access/{user_login_id}', function(Request $request, Re
 
 
 // Adding Access Audio By UserID
-$app->post('/resource/audio/access/add', function(Request $request, Response $response){
+$app->post('/api/resource/audio/access/add', function(Request $request, Response $response){
     $user_login_id = $request->getParam('user_login_id');
     $audio_id = $request->getParam('audio_id');
 
@@ -85,7 +85,7 @@ $app->post('/resource/audio/access/add', function(Request $request, Response $re
 });
 
 // Adding Access Video By UserID
-$app->post('/resource/video/access/add', function(Request $request, Response $response){
+$app->post('/api/resource/video/access/add', function(Request $request, Response $response){
     $user_login_id = $request->getParam('user_login_id');
     $video_id = $request->getParam('video_id');
 
@@ -102,7 +102,7 @@ $app->post('/resource/video/access/add', function(Request $request, Response $re
 });
 
 // Adding Access Book By UserID
-$app->post('/resource/book/access/add', function(Request $request, Response $response){
+$app->post('/api/resource/book/access/add', function(Request $request, Response $response){
     $user_login_id = $request->getParam('user_login_id');
     $book_id = $request->getParam('book_id');
 

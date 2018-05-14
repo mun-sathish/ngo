@@ -12,8 +12,8 @@ class Audio extends React.Component {
             speaker: "",
             price: -1,
             discount: -1,
-            is_premium: false,
-            is_free: false,
+            is_premium: 0,
+            is_free: 0,
             banner: "",
             file: "",
 
@@ -74,7 +74,12 @@ class Audio extends React.Component {
         }
 
     handleClick = (e) => {
-        console.log(this.state);
+        let tempState = this.state
+        for (const key of Object.keys(tempState)) {
+            if (typeof tempState[key] === "string")
+                if (tempState[key].length === 0)
+                    tempState[key] = "_blank"
+        }
         this.props.addAudio(this.state);
     }
 
@@ -98,6 +103,7 @@ class Audio extends React.Component {
                 })
         return (
             <div>
+                {JSON.stringify(this.state)}<br/>
                 Title: <input type="text" defaultValue={this.state.title} onChange={this.changeTitle} placeholder="Title" /><br />
                 Author: <input type="text" defaultValue={this.state.author} onChange={this.changeAuthor} placeholder="Author" /><br />
                 Genre: <input type="text" defaultValue={this.state.genre} onChange={this.changeGenre} placeholder="Genre" /><br />
@@ -106,7 +112,7 @@ class Audio extends React.Component {
                 Discount: <input type="number" defaultValue={this.state.discount} onChange={this.changeDiscount} placeholder="Discount" /><br />
                 IsPremium: <input type="checkbox" defaultChecked={this.state.is_premium} onChange={this.changeIsPremium} placeholder="IsPremium" /><br />
                 IsFree: <input type="checkbox" defaultChecked={this.state.is_free} onChange={this.changeIsFree} placeholder="IsFree" /><br />
-                Banner: <input type="file" onChange={(e) => this.changeBanner(e.target.files[0])} /><br />
+                Banner: <input type="file"  onChange={(e) => this.changeBanner(e.target.files[0])} /><br />
                 Audio File: <input type="file" onChange={(e) => this.changeFile(e.target.files[0])} /><br />
                 <input type="submit" value="Add Audio" onClick={this.handleClick} /><br />
 
