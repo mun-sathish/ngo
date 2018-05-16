@@ -1,9 +1,8 @@
 export default function sendReq(uri, reqMethod, reqData) {
     console.log("URL: " + uri + ", Method: " + reqMethod)
     console.log(reqData);
-    
-    if(reqMethod === "get")
-    {
+
+    if (reqMethod === "get") {
         return fetch(uri, {
             method: reqMethod,
             headers: {
@@ -25,10 +24,10 @@ export default function sendReq(uri, reqMethod, reqData) {
             },
             body: JSON.stringify(reqData)
         })
-            .then((response) => console.log(response.text()) ) //console.log(response.text()) 
+            .then((response) => console.log(response.text())) //console.log(response.text()) 
             .then(response => {
-                if (response.statusCode !== null && response.statusMessage !== null && response.statusCode !== 0){
-                    console.log("Success but error response, code: " + response.statusCode +  " message: " + response.statusMessage);
+                if (response.statusCode !== null && response.statusMessage !== null && response.statusCode !== 0) {
+                    console.log("Success but error response, code: " + response.statusCode + " message: " + response.statusMessage);
                     return Promise.reject();
                 }
             })
@@ -37,5 +36,5 @@ export default function sendReq(uri, reqMethod, reqData) {
                 return Promise.reject();
             })
     }
-    
+
 } 

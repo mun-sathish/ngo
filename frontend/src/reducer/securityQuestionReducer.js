@@ -1,6 +1,6 @@
 import { ACTION } from '../util/constants'
 import store from '../store/store'
-import { fetchSecurityQuestion} from '../action/security_question_action'
+import { fetchSecurityQuestion } from '../action/security_question_action'
 
 export function securityQuestionReducer(state, action) {
     switch (action.type) {
@@ -19,7 +19,7 @@ export function securityQuestionReducer(state, action) {
             return [...state]
 
         case ACTION.SQ:
-            if(action.payload == null)
+            if (action.payload == null)
                 return []
             else
                 return action.payload

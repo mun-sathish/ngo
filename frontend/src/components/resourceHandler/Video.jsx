@@ -8,7 +8,7 @@ class Video extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            video : {
+            video: {
                 title: "",
                 author: "",
                 genre: "",
@@ -30,14 +30,14 @@ class Video extends React.Component {
         this.props.fetchAllVideo();
     }
 
-    changeTitle = (e) => this.setState({ video : { ...this.state.video, title: e.target.value }})
-    changeAuthor = (e) => this.setState({ video: { ...this.state.video,  author: e.target.value }})
-    changeGenre = (e) => this.setState({ video: { ...this.state.video,  genre: e.target.value }})
-    changeCast = (e) => this.setState({ video: { ...this.state.video,  cast: e.target.value }})
-    changePrice = (e) => this.setState({ video: { ...this.state.video,  price: parseInt(e.target.value, 10) }})
-    changeDiscount = (e) => this.setState({ video: { ...this.state.video,  discount: parseInt(e.target.value, 10) }})
-    changeIsPremium = (e) => this.setState({ video: { ...this.state.video,  is_premium: e.target.checked }})
-    changeIsFree = (e) => this.setState({ video: { ...this.state.video,  is_free: e.target.checked }})
+    changeTitle = (e) => this.setState({ video: { ...this.state.video, title: e.target.value } })
+    changeAuthor = (e) => this.setState({ video: { ...this.state.video, author: e.target.value } })
+    changeGenre = (e) => this.setState({ video: { ...this.state.video, genre: e.target.value } })
+    changeCast = (e) => this.setState({ video: { ...this.state.video, cast: e.target.value } })
+    changePrice = (e) => this.setState({ video: { ...this.state.video, price: parseInt(e.target.value, 10) } })
+    changeDiscount = (e) => this.setState({ video: { ...this.state.video, discount: parseInt(e.target.value, 10) } })
+    changeIsPremium = (e) => this.setState({ video: { ...this.state.video, is_premium: e.target.checked } })
+    changeIsFree = (e) => this.setState({ video: { ...this.state.video, is_free: e.target.checked } })
     changeFile = (fileVar) => {
         let temp = fileVar.name.split(".").pop().toLowerCase()
         let allowedFormat = ["mp4"]
@@ -52,7 +52,7 @@ class Video extends React.Component {
                 alert("Select Image of Mp3 ")
             else {
                 me.setState({ video_src: fileContent })
-                me.setState({ video: { ...me.state.video,  file: fileContent }})
+                me.setState({ video: { ...me.state.video, file: fileContent } })
             }
         }
     }
@@ -72,12 +72,12 @@ class Video extends React.Component {
                 alert("Select Image of Jpeg, Png, Jpg ")
             else {
                 me.setState({ banner_src: fileContent })
-                me.setState({ video: { ...me.state.video,  banner: fileContent }})
+                me.setState({ video: { ...me.state.video, banner: fileContent } })
             }
         }
     }
 
-    
+
     handleClick = (e) => {
         let tempState = this.state.video
         for (const key of Object.keys(tempState)) {
@@ -89,28 +89,28 @@ class Video extends React.Component {
     }
 
     changeVideoSrc = (content, type) => {
-        if(type === "banner")
+        if (type === "banner")
             this.setState({ banner_src: content })
-        else if(type === "file")
+        else if (type === "file")
             this.setState({ video_src: content })
     }
 
     handleVideoRowClick = (obj, type) => {
-        if(type === "update")
+        if (type === "update")
             this.props.updateVideo(obj);
-        else if(type === "delete")
+        else if (type === "delete")
             this.props.deleteVideo({ ...obj.video_id });
     }
 
     render() {
         let video = this.props.video.map(item => {
             return (
-                    <VideoRow changeVideoSrc={this.changeVideoSrc} handleVideoRowClick={this.handleVideoRowClick} data={item} />
+                <VideoRow changeVideoSrc={this.changeVideoSrc} handleVideoRowClick={this.handleVideoRowClick} data={item} />
             )
         })
         return (
             <div>
-                {JSON.stringify(this.state.video)}<br/>
+                {JSON.stringify(this.state.video)}<br />
                 Title: <input type="text" defaultValue={this.state.video.title} onChange={this.changeTitle} placeholder="Title" /><br />
                 Author: <input type="text" defaultValue={this.state.video.author} onChange={this.changeAuthor} placeholder="Author" /><br />
                 Genre: <input type="text" defaultValue={this.state.video.genre} onChange={this.changeGenre} placeholder="Genre" /><br />

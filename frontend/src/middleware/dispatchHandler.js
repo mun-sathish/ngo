@@ -1,54 +1,54 @@
 import sendReq from '../util/httpRequest'
-import {ACTION, REQ} from '../util/constants'
+import { ACTION, REQ } from '../util/constants'
 
 const dispatchHandler = store => next => action => {
     // console.log("pre dispatch: " + action);
     switch (action.type) {
         case ACTION.USER_LOGIN:
             sendReq(REQ.USER_LOGIN.URI, REQ.USER_LOGIN.METHOD, action.payload)
-            .then((jsonResponse) => {
+                .then((jsonResponse) => {
                     action.payload = jsonResponse;
                     return next(action);
                 });
-                break;
+            break;
 
-                // RESOURCES
-                case ACTION.BOOK_UPDATE:
-                     sendReq(REQ.BOOK_UPDATE.URI, REQ.BOOK_UPDATE.METHOD, action.payload)
-                         .then(jsonResponse => {
-                             sendReq(REQ.BOOK_ALL.URI, REQ.BOOK_ALL.METHOD, null)
-                                 .then(jsonResponse => {
-                                     action.type = ACTION.BOOK
-                                     action.payload = jsonResponse
-                                     return next(action)
-                                 })
-                         })
-                    break;
+        // RESOURCES
+        case ACTION.BOOK_UPDATE:
+            sendReq(REQ.BOOK_UPDATE.URI, REQ.BOOK_UPDATE.METHOD, action.payload)
+                .then(jsonResponse => {
+                    sendReq(REQ.BOOK_ALL.URI, REQ.BOOK_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.BOOK
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
+                })
+            break;
 
-            case ACTION.AUDIO_UPDATE:
-                sendReq(REQ.AUDIO_UPDATE.URI, REQ.AUDIO_UPDATE.METHOD, action.payload)
-                    .then(jsonResponse => {
-                        sendReq(REQ.AUDIO_ALL.URI, REQ.AUDIO_ALL.METHOD, null)
-                            .then(jsonResponse => {
-                                action.type = ACTION.AUDIO
-                                action.payload = jsonResponse
-                                return next(action)
-                            })
-                    })
-                break;  
+        case ACTION.AUDIO_UPDATE:
+            sendReq(REQ.AUDIO_UPDATE.URI, REQ.AUDIO_UPDATE.METHOD, action.payload)
+                .then(jsonResponse => {
+                    sendReq(REQ.AUDIO_ALL.URI, REQ.AUDIO_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.AUDIO
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
+                })
+            break;
 
-            case ACTION.VIDEO_UPDATE:
-                sendReq(REQ.VIDEO_UPDATE.URI, REQ.VIDEO_UPDATE.METHOD, action.payload)
-                    .then(jsonResponse => {
-                        sendReq(REQ.VIDEO_ALL.URI, REQ.VIDEO_ALL.METHOD, null)
-                            .then(jsonResponse => {
-                                action.type = ACTION.VIDEO
-                                action.payload = jsonResponse
-                                return next(action)
-                            })
-                    })
-                   
-                break;
+        case ACTION.VIDEO_UPDATE:
+            sendReq(REQ.VIDEO_UPDATE.URI, REQ.VIDEO_UPDATE.METHOD, action.payload)
+                .then(jsonResponse => {
+                    sendReq(REQ.VIDEO_ALL.URI, REQ.VIDEO_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.VIDEO
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
+                })
+
+            break;
 
         case ACTION.BOOK_DELETE:
             sendReq(REQ.BOOK_DELETE.URI, REQ.BOOK_DELETE.METHOD, action.payload)
@@ -71,25 +71,25 @@ const dispatchHandler = store => next => action => {
                 })
             break;
 
-            case ACTION.BOOK_ADD:
-                sendReq(REQ.BOOK_ADD.URI, REQ.BOOK_ADD.METHOD, action.payload)
+        case ACTION.BOOK_ADD:
+            sendReq(REQ.BOOK_ADD.URI, REQ.BOOK_ADD.METHOD, action.payload)
                 .then(jsonResponse => {
                     return next(action)
                 })
-                break;
-
-            case ACTION.AUDIO_ADD:
-                sendReq(REQ.AUDIO_ADD.URI, REQ.AUDIO_ADD.METHOD, action.payload)
-                    .then(jsonResponse => {
-                        return next(action)
-                    })
             break;
 
-            case ACTION.VIDEO_ADD:
-                sendReq(REQ.VIDEO_ADD.URI, REQ.VIDEO_ADD.METHOD, action.payload)
-                    .then(jsonResponse => {
-                        return next(action)
-                    })
+        case ACTION.AUDIO_ADD:
+            sendReq(REQ.AUDIO_ADD.URI, REQ.AUDIO_ADD.METHOD, action.payload)
+                .then(jsonResponse => {
+                    return next(action)
+                })
+            break;
+
+        case ACTION.VIDEO_ADD:
+            sendReq(REQ.VIDEO_ADD.URI, REQ.VIDEO_ADD.METHOD, action.payload)
+                .then(jsonResponse => {
+                    return next(action)
+                })
             break;
 
         case ACTION.BOOK:
@@ -107,7 +107,7 @@ const dispatchHandler = store => next => action => {
                     return next(action)
                 })
             break;
-            
+
         case ACTION.VIDEO:
             sendReq(REQ.VIDEO_ALL.URI, REQ.VIDEO_ALL.METHOD, null)
                 .then(jsonResponse => {
@@ -115,29 +115,29 @@ const dispatchHandler = store => next => action => {
                     return next(action)
                 })
             break;
-            // SECUIRTY_QUESTION
-            case ACTION.SQ: 
-                sendReq(REQ.SQ_ALL.URI, REQ.SQ_ALL.METHOD, null)
-                    .then(jsonResponse => {
-                        action.payload = jsonResponse;
-                        return next(action);
+        // SECUIRTY_QUESTION
+        case ACTION.SQ:
+            sendReq(REQ.SQ_ALL.URI, REQ.SQ_ALL.METHOD, null)
+                .then(jsonResponse => {
+                    action.payload = jsonResponse;
+                    return next(action);
                 })
-                break;
-            
-            case ACTION.SQ_ADD:
-                sendReq(REQ.SQ_ADD.URI, REQ.SQ_ADD.METHOD, action.payload)
+            break;
+
+        case ACTION.SQ_ADD:
+            sendReq(REQ.SQ_ADD.URI, REQ.SQ_ADD.METHOD, action.payload)
                 .then(jsonResponse => {
                     return next(action)
                 })
-                break;
-            
+            break;
+
         case ACTION.SQ_DELETE:
             sendReq(REQ.SQ_DELETE.URI + action.payload, REQ.SQ_DELETE.METHOD, null)
                 .then(jsonResponse => {
                     return next(action)
                 })
             break;
-            default:
+        default:
     }
 
     // let ret = next(action);

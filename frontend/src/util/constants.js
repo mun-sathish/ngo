@@ -1,15 +1,15 @@
 
 
-export  const ACTION = {
-    USER_LOGIN : "user_login",
-    SQ : "security_question",
+export const ACTION = {
+    USER_LOGIN: "user_login",
+    SQ: "security_question",
     SQ_ADD: "security_question_add",
     SQ_UPDATE: "security_question_update",
     SQ_DELETE: "security_question_delete",
 
     BOOK_ADD: "books_add",
-    BOOK_DELETE : "books_delete",
-    BOOK_UPDATE : "books_update",
+    BOOK_DELETE: "books_delete",
+    BOOK_UPDATE: "books_update",
     BOOK: "books",
     AUDIO_ADD: "audio_add",
     AUDIO_DELETE: "audio_delete",
@@ -23,9 +23,9 @@ export  const ACTION = {
 
 const BASE_URI = "http://ngo.com/api"
 export const REQ = {
-    USER_LOGIN : {
+    USER_LOGIN: {
         URI: BASE_URI + "/user/signin",
-        METHOD : "post"
+        METHOD: "post"
     },
     BOOK_UPDATE: {
         URI: BASE_URI + "/resource/book/update",
@@ -51,9 +51,9 @@ export const REQ = {
         URI: BASE_URI + "/resource/video/delete",
         METHOD: "post"
     },
-    BOOK_ADD : {
+    BOOK_ADD: {
         URI: BASE_URI + "/resource/book/add",
-        METHOD : "post"
+        METHOD: "post"
     },
     AUDIO_ADD: {
         URI: BASE_URI + "/resource/audio/add",
@@ -63,7 +63,7 @@ export const REQ = {
         URI: BASE_URI + "/resource/video/add",
         METHOD: "post"
     },
-    BOOK_ALL : {
+    BOOK_ALL: {
         URI: BASE_URI + "/resource/book",
         METHOD: "get"
     },
@@ -76,11 +76,11 @@ export const REQ = {
         METHOD: "get"
     },
 
-    SQ_ALL : {
+    SQ_ALL: {
         URI: BASE_URI + "/security-question",
         METHOD: "get"
     },
-    SQ_ADD : {
+    SQ_ADD: {
         URI: BASE_URI + "/security-question/add",
         METHOD: "post"
     },

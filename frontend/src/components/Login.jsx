@@ -1,14 +1,14 @@
 import React from "react";
 import { connect } from 'react-redux';
-import {performLogin} from '../action/login_action'
+import { performLogin } from '../action/login_action'
 
 class Login extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            username : "",
-            password : ""
+            username: "",
+            password: ""
         }
     }
 
@@ -19,9 +19,9 @@ class Login extends React.Component {
     }
 
     changeUsername = (e) => {
-        this.setState({username : e.target.value});
+        this.setState({ username: e.target.value });
     }
-    
+
     changePassword = (e) => {
         this.setState({ password: e.target.value });
     }
@@ -35,10 +35,10 @@ class Login extends React.Component {
         return (
             <div >
                 {/* <form onSubmit={this.handleLoginBtn}> */}
-                        Username: <input defaultValue={this.state.username}  onChange={this.changeUsername} type="text" /><br/>
-                    Password: <input defaultValue={this.state.password} onChange={this.changePassword}  type="password" /><br />
-                        <input type="submit" onClick={this.handleLoginBtn} />
-                    {/* </form> */}
+                Username: <input defaultValue={this.state.username} onChange={this.changeUsername} type="text" /><br />
+                Password: <input defaultValue={this.state.password} onChange={this.changePassword} type="password" /><br />
+                <input type="submit" onClick={this.handleLoginBtn} />
+                {/* </form> */}
             </div>
         );
     }

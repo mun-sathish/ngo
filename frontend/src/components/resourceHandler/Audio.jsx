@@ -26,52 +26,52 @@ class Audio extends React.Component {
         this.props.fetchAllAudio();
     }
 
-        changeTitle = (e) => this.setState({ title: e.target.value })
-        changeAuthor = (e) => this.setState({ author: e.target.value })
-        changeGenre = (e) => this.setState({ genre: e.target.value })
-        changeSpeaker = (e) => this.setState({ speaker: e.target.value })
+    changeTitle = (e) => this.setState({ title: e.target.value })
+    changeAuthor = (e) => this.setState({ author: e.target.value })
+    changeGenre = (e) => this.setState({ genre: e.target.value })
+    changeSpeaker = (e) => this.setState({ speaker: e.target.value })
     changePrice = (e) => this.setState({ price: parseInt(e.target.value, 10) })
-        changeDiscount = (e) => this.setState({ discount: parseInt(e.target.value, 10) })
-        changeIsPremium = (e) => this.setState({ is_premium: e.target.checked })
-        changeIsFree = (e) => this.setState({ is_free: e.target.checked })
-        changeFile = (fileVar) => {
-            let temp = fileVar.name.split(".").pop().toLowerCase()
-            let allowedFormat = ["mp3"]
+    changeDiscount = (e) => this.setState({ discount: parseInt(e.target.value, 10) })
+    changeIsPremium = (e) => this.setState({ is_premium: e.target.checked })
+    changeIsFree = (e) => this.setState({ is_free: e.target.checked })
+    changeFile = (fileVar) => {
+        let temp = fileVar.name.split(".").pop().toLowerCase()
+        let allowedFormat = ["mp3"]
 
-            let reader = new FileReader();
-            reader.readAsDataURL(fileVar);
-            let me = this
-            // me.setState({ src: URL.createObjectURL(e.target.files[0]) })
-            reader.onload = function () {
-                var fileContent = reader.result;
-                if (allowedFormat.indexOf(temp) === -1)
-                    alert("Select Image of Mp3 ")
-                else {
-                    me.setState({ audio_src: fileContent })
-                    me.setState({ file: fileContent })
-                }
+        let reader = new FileReader();
+        reader.readAsDataURL(fileVar);
+        let me = this
+        // me.setState({ src: URL.createObjectURL(e.target.files[0]) })
+        reader.onload = function () {
+            var fileContent = reader.result;
+            if (allowedFormat.indexOf(temp) === -1)
+                alert("Select Image of Mp3 ")
+            else {
+                me.setState({ audio_src: fileContent })
+                me.setState({ file: fileContent })
             }
         }
+    }
 
-        changeBanner = (fileVar) => {
-            let temp = fileVar.name.split(".").pop().toLowerCase()
-            let allowedFormat = ["png", "jpg", "jpeg"]
+    changeBanner = (fileVar) => {
+        let temp = fileVar.name.split(".").pop().toLowerCase()
+        let allowedFormat = ["png", "jpg", "jpeg"]
 
-            let reader = new FileReader();
-            reader.readAsDataURL(fileVar);
-            let me = this
-            // me.setState({ src: URL.createObjectURL(e.target.files[0]) })
-            reader.onload = function () {
-                var fileContent = reader.result;
+        let reader = new FileReader();
+        reader.readAsDataURL(fileVar);
+        let me = this
+        // me.setState({ src: URL.createObjectURL(e.target.files[0]) })
+        reader.onload = function () {
+            var fileContent = reader.result;
 
-                if (allowedFormat.indexOf(temp) === -1)
-                    alert("Select Image of Jpeg, Png, Jpg ")
-                else {
-                    me.setState({ banner_src: fileContent })
-                    me.setState({ banner: fileContent })
-                }
+            if (allowedFormat.indexOf(temp) === -1)
+                alert("Select Image of Jpeg, Png, Jpg ")
+            else {
+                me.setState({ banner_src: fileContent })
+                me.setState({ banner: fileContent })
             }
         }
+    }
 
     handleClick = (e) => {
         let tempState = this.state
@@ -84,26 +84,26 @@ class Audio extends React.Component {
     }
 
     render() {
-            // console.log(this.props.audio)
-                let audio = this.props.audio.map(item => {
-                    return (
-                        <tr key={item.audio_id}>
-                            <td>{item.title}</td>
-                            <td>{item.author}</td>
-                            <td>{item.genre}</td>
-                            <td>{item.speaker}</td>
-                            <td>{item.price}</td>
-                            <td>{item.discount}</td>
-                            <td>{String(item.is_premium)}</td>
-                            <td>{String(item.is_free)}</td>
-                            <td><img src={item.banner} alt="img" height="100px" /></td>
-                            <td> <audio controls="true" src={item.file}></audio></td>
-                        </tr>
-                    )
-                })
+        // console.log(this.props.audio)
+        let audio = this.props.audio.map(item => {
+            return (
+                <tr key={item.audio_id}>
+                    <td>{item.title}</td>
+                    <td>{item.author}</td>
+                    <td>{item.genre}</td>
+                    <td>{item.speaker}</td>
+                    <td>{item.price}</td>
+                    <td>{item.discount}</td>
+                    <td>{String(item.is_premium)}</td>
+                    <td>{String(item.is_free)}</td>
+                    <td><img src={item.banner} alt="img" height="100px" /></td>
+                    <td> <audio controls="true" src={item.file}></audio></td>
+                </tr>
+            )
+        })
         return (
             <div>
-                {JSON.stringify(this.state)}<br/>
+                {JSON.stringify(this.state)}<br />
                 Title: <input type="text" defaultValue={this.state.title} onChange={this.changeTitle} placeholder="Title" /><br />
                 Author: <input type="text" defaultValue={this.state.author} onChange={this.changeAuthor} placeholder="Author" /><br />
                 Genre: <input type="text" defaultValue={this.state.genre} onChange={this.changeGenre} placeholder="Genre" /><br />
@@ -112,11 +112,11 @@ class Audio extends React.Component {
                 Discount: <input type="number" defaultValue={this.state.discount} onChange={this.changeDiscount} placeholder="Discount" /><br />
                 IsPremium: <input type="checkbox" defaultChecked={this.state.is_premium} onChange={this.changeIsPremium} placeholder="IsPremium" /><br />
                 IsFree: <input type="checkbox" defaultChecked={this.state.is_free} onChange={this.changeIsFree} placeholder="IsFree" /><br />
-                Banner: <input type="file"  onChange={(e) => this.changeBanner(e.target.files[0])} /><br />
+                Banner: <input type="file" onChange={(e) => this.changeBanner(e.target.files[0])} /><br />
                 Audio File: <input type="file" onChange={(e) => this.changeFile(e.target.files[0])} /><br />
                 <input type="submit" value="Add Audio" onClick={this.handleClick} /><br />
 
-                <audio controls="true"  src={this.state.audio_src}></audio><br />
+                <audio controls="true" src={this.state.audio_src}></audio><br />
                 <img src={this.state.banner_src} alt="img" height="100px" />
                 <hr />
 

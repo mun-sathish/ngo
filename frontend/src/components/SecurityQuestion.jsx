@@ -7,12 +7,12 @@ class SecurityQuestion extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            question : ""
+            question: ""
         }
     }
 
     handleQuestion = (e) => {
-        this.setState({question : e.target.value});
+        this.setState({ question: e.target.value });
     }
 
     handleAddClick = (e) => {
@@ -27,7 +27,7 @@ class SecurityQuestion extends React.Component {
         // this.props.updateSQ(sid);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.props.fetchSecurityQuestion()
     }
 
@@ -37,7 +37,7 @@ class SecurityQuestion extends React.Component {
                 <tr key={item.security_question_id}>
                     <td>{item.security_question_id}</td>
                     <td>{item.question}</td>
-                    <td><input  type="button" value="Delete" onClick={()=>this.handleDeleteClick(item.security_question_id)}/></td>
+                    <td><input type="button" value="Delete" onClick={() => this.handleDeleteClick(item.security_question_id)} /></td>
                     <td>< input type="button" value="Update" onClick={() => this.handleUpdateClick(item.security_question_id)} /></td>
                 </tr>
             )
@@ -55,25 +55,25 @@ class SecurityQuestion extends React.Component {
 
 
 
-        
+
         return (
             <div>
                 <h1>ADD</h1>
                 <input defaultValue={this.state.question} onChange={this.handleQuestion} type="text" placeholder="Secuirty Question" />
                 <input type="submit" value="Add" onClick={this.handleAddClick} />
-                <hr/>
-                <h1>OUTPUT:</h1> <br/>
+                <hr />
+                <h1>OUTPUT:</h1> <br />
                 <table >
                     <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Question</th>
-                    </tr>
+                        <tr>
+                            <th>ID</th>
+                            <th>Question</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {sq}
-                        </tbody>
-                    
+                    </tbody>
+
                 </table>
             </div>
         );

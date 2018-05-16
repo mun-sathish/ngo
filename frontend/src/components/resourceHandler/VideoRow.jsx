@@ -5,7 +5,7 @@ export default class VideoRow extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            video_id : this.props.data.video_id,
+            video_id: this.props.data.video_id,
             title: null,
             author: null,
             genre: null,
@@ -19,7 +19,7 @@ export default class VideoRow extends React.Component {
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         console.log("Inside VideoRow")
         console.log(this.props.data)
     }
@@ -82,7 +82,7 @@ export default class VideoRow extends React.Component {
                 <td><input type="text" defaultValue={this.props.data.cast} onChange={this.changeCast} placeholder="Cast" /></td>
                 <td><input type="number" defaultValue={this.props.data.price} onChange={this.changePrice} placeholder="Price" /></td>
                 <td><input type="number" defaultValue={this.props.data.discount} onChange={this.changeDiscount} placeholder="Discount" /></td>
-                <td><input type="checkbox" defaultChecked={parseInt(this.props.data.is_premium,10)} onChange={this.changeIsPremium} placeholder="IsPremium" /></td>
+                <td><input type="checkbox" defaultChecked={parseInt(this.props.data.is_premium, 10)} onChange={this.changeIsPremium} placeholder="IsPremium" /></td>
                 <td><input type="checkbox" defaultChecked={parseInt(this.props.data.is_free, 10)} onChange={this.changeIsFree} placeholder="IsFree" /></td>
                 <td><video height="50" controls="true" src={this.props.data.video_src}></video><br /></td>
                 <td><img src={this.props.data.banner} alt="img" height="50px" /></td>
