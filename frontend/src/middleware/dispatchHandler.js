@@ -13,7 +13,65 @@ const dispatchHandler = store => next => action => {
                 break;
 
                 // RESOURCES
-                case ACTION.BOOK_ADD:
+                case ACTION.BOOK_UPDATE:
+                     sendReq(REQ.BOOK_UPDATE.URI, REQ.BOOK_UPDATE.METHOD, action.payload)
+                         .then(jsonResponse => {
+                             sendReq(REQ.BOOK_ALL.URI, REQ.BOOK_ALL.METHOD, null)
+                                 .then(jsonResponse => {
+                                     action.type = ACTION.BOOK
+                                     action.payload = jsonResponse
+                                     return next(action)
+                                 })
+                         })
+                    break;
+
+            case ACTION.AUDIO_UPDATE:
+                sendReq(REQ.AUDIO_UPDATE.URI, REQ.AUDIO_UPDATE.METHOD, action.payload)
+                    .then(jsonResponse => {
+                        sendReq(REQ.AUDIO_ALL.URI, REQ.AUDIO_ALL.METHOD, null)
+                            .then(jsonResponse => {
+                                action.type = ACTION.AUDIO
+                                action.payload = jsonResponse
+                                return next(action)
+                            })
+                    })
+                break;  
+
+            case ACTION.VIDEO_UPDATE:
+                sendReq(REQ.VIDEO_UPDATE.URI, REQ.VIDEO_UPDATE.METHOD, action.payload)
+                    .then(jsonResponse => {
+                        sendReq(REQ.VIDEO_ALL.URI, REQ.VIDEO_ALL.METHOD, null)
+                            .then(jsonResponse => {
+                                action.type = ACTION.VIDEO
+                                action.payload = jsonResponse
+                                return next(action)
+                            })
+                    })
+                   
+                break;
+
+        case ACTION.BOOK_DELETE:
+            sendReq(REQ.BOOK_DELETE.URI, REQ.BOOK_DELETE.METHOD, action.payload)
+                .then(jsonResponse => {
+                    return next(action)
+                })
+            break;
+
+        case ACTION.AUDIO_DELETE:
+            sendReq(REQ.AUDIO_DELETE.URI, REQ.VIDEO_DELETE.METHOD, action.payload)
+                .then(jsonResponse => {
+                    return next(action)
+                })
+            break;
+
+        case ACTION.VIDEO_DELETE:
+            sendReq(REQ.VIDEO_DELETE.URI, REQ.VIDEO_DELETE.METHOD, action.payload)
+                .then(jsonResponse => {
+                    return next(action)
+                })
+            break;
+
+            case ACTION.BOOK_ADD:
                 sendReq(REQ.BOOK_ADD.URI, REQ.BOOK_ADD.METHOD, action.payload)
                 .then(jsonResponse => {
                     return next(action)

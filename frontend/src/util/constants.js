@@ -1,3 +1,5 @@
+
+
 export  const ACTION = {
     USER_LOGIN : "user_login",
     SQ : "security_question",
@@ -6,10 +8,16 @@ export  const ACTION = {
     SQ_DELETE: "security_question_delete",
 
     BOOK_ADD: "books_add",
+    BOOK_DELETE : "books_delete",
+    BOOK_UPDATE : "books_update",
     BOOK: "books",
     AUDIO_ADD: "audio_add",
+    AUDIO_DELETE: "audio_delete",
+    AUDIO_UPDATE: "audio_update",
     AUDIO: "audio",
     VIDEO_ADD: "video_add",
+    VIDEO_DELETE: "video_delete",
+    VIDEO_UPDATE: "video_update",
     VIDEO: "video"
 }
 
@@ -18,6 +26,30 @@ export const REQ = {
     USER_LOGIN : {
         URI: BASE_URI + "/user/signin",
         METHOD : "post"
+    },
+    BOOK_UPDATE: {
+        URI: BASE_URI + "/resource/book/update",
+        METHOD: "post"
+    },
+    AUDIO_UPDATE: {
+        URI: BASE_URI + "/resource/audio/update",
+        METHOD: "post"
+    },
+    VIDEO_UPDATE: {
+        URI: BASE_URI + "/resource/video/update",
+        METHOD: "post"
+    },
+    BOOK_DELETE: {
+        URI: BASE_URI + "/resource/book/delete",
+        METHOD: "post"
+    },
+    AUDIO_DELETE: {
+        URI: BASE_URI + "/resource/audio/delete",
+        METHOD: "post"
+    },
+    VIDEO_DELETE: {
+        URI: BASE_URI + "/resource/video/delete",
+        METHOD: "post"
     },
     BOOK_ADD : {
         URI: BASE_URI + "/resource/book/add",

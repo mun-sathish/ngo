@@ -1,22 +1,25 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { addVideo, fetchAllVideo } from '../../action/resource_action'
+import { addVideo, fetchAllVideo, deleteVideo, updateVideo } from '../../action/resource_action'
+import VideoRow from './VideoRow.jsx'
 
 class Video extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            title: "",
-            author: "",
-            genre: "",
-            cast: "",
-            price: -1,
-            discount: -1,
-            is_premium: 0, //boolean
-            is_free: 0, //boolean
-            banner: "",
-            file: "",
+            video : {
+                title: "",
+                author: "",
+                genre: "",
+                cast: "",
+                price: -1,
+                discount: -1,
+                is_premium: 0, //boolean
+                is_free: 0, //boolean
+                banner: "",
+                file: "",
+            },
 
             banner_src: "",
             video_src: ""
@@ -27,14 +30,14 @@ class Video extends React.Component {
         this.props.fetchAllVideo();
     }
 
-    changeTitle = (e) => this.setState({ title: e.target.value })
-    changeAuthor = (e) => this.setState({ author: e.target.value })
-    changeGenre = (e) => this.setState({ genre: e.target.value })
-    changeCast = (e) => this.setState({ cast: e.target.value })
-    changePrice = (e) => this.setState({ price: parseInt(e.target.value, 10) })
-    changeDiscount = (e) => this.setState({ discount: parseInt(e.target.value, 10) })
-    changeIsPremium = (e) => this.setState({ is_premium: e.target.checked })
-    changeIsFree = (e) => this.setState({ is_free: e.target.checked })
+    changeTitle = (e) => this.setState({ video : { ...this.state.video, title: e.target.value }})
+    changeAuthor = (e) => this.setState({ video: { ...this.state.video,  author: e.target.value }})
+    changeGenre = (e) => this.setState({ video: { ...this.state.video,  genre: e.target.value }})
+    changeCast = (e) => this.setState({ video: { ...this.state.video,  cast: e.target.value }})
+    changePrice = (e) => this.setState({ video: { ...this.state.video,  price: parseInt(e.target.value, 10) }})
+    changeDiscount = (e) => this.setState({ video: { ...this.state.video,  discount: parseInt(e.target.value, 10) }})
+    changeIsPremium = (e) => this.setState({ video: { ...this.state.video,  is_premium: e.target.checked }})
+    changeIsFree = (e) => this.setState({ video: { ...this.state.video,  is_free: e.target.checked }})
     changeFile = (fileVar) => {
         let temp = fileVar.name.split(".").pop().toLowerCase()
         let allowedFormat = ["mp4"]
@@ -48,8 +51,8 @@ class Video extends React.Component {
             if (allowedFormat.indexOf(temp) === -1)
                 alert("Select Image of Mp3 ")
             else {
-                me.setState({ audio_src: fileContent })
-                me.setState({ file: fileContent })
+                me.setState({ video_src: fileContent })
+                me.setState({ video: { ...me.state.video,  file: fileContent }})
             }
         }
     }
@@ -69,54 +72,58 @@ class Video extends React.Component {
                 alert("Select Image of Jpeg, Png, Jpg ")
             else {
                 me.setState({ banner_src: fileContent })
-                me.setState({ banner: fileContent })
+                me.setState({ video: { ...me.state.video,  banner: fileContent }})
             }
         }
     }
 
+    
     handleClick = (e) => {
-        let tempState = this.state
+        let tempState = this.state.video
         for (const key of Object.keys(tempState)) {
             if (typeof tempState[key] === "string")
                 if (tempState[key].length === 0)
                     tempState[key] = "_blank"
         }
-        this.props.addVideo(this.state);
+        this.props.addVideo(this.state.video);
+    }
+
+    changeVideoSrc = (content, type) => {
+        if(type === "banner")
+            this.setState({ banner_src: content })
+        else if(type === "file")
+            this.setState({ video_src: content })
+    }
+
+    handleVideoRowClick = (obj, type) => {
+        if(type === "update")
+            this.props.updateVideo(obj);
+        else if(type === "delete")
+            this.props.deleteVideo({ ...obj.video_id });
     }
 
     render() {
         let video = this.props.video.map(item => {
             return (
-                <tr key={item.video_id}>
-                    <td>{item.title}</td>
-                    <td>{item.author}</td>
-                    <td>{item.genre}</td>
-                    <td>{item.cast}</td>
-                    <td>{item.price}</td>
-                    <td>{item.discount}</td>
-                    <td>{String(item.is_premium)}</td>
-                    <td>{String(item.is_free)}</td>
-                    <td><img src={item.banner} alt="img" height="100px" /></td>
-                    <td> <video controls="true" src={item.file}></video></td>
-                </tr>
+                    <VideoRow changeVideoSrc={this.changeVideoSrc} handleVideoRowClick={this.handleVideoRowClick} data={item} />
             )
         })
         return (
             <div>
-                {JSON.stringify(this.state)}<br/>
-                Title: <input type="text" defaultValue={this.state.title} onChange={this.changeTitle} placeholder="Title" /><br />
-                Author: <input type="text" defaultValue={this.state.author} onChange={this.changeAuthor} placeholder="Author" /><br />
-                Genre: <input type="text" defaultValue={this.state.genre} onChange={this.changeGenre} placeholder="Genre" /><br />
-                Cast: <input type="text" defaultValue={this.state.cast} onChange={this.changeCast} placeholder="Cast" /><br />
-                Price: <input type="number" defaultValue={this.state.price} onChange={this.changePrice} placeholder="Price" /><br />
-                Discount: <input type="number" defaultValue={this.state.discount} onChange={this.changeDiscount} placeholder="Discount" /><br />
-                IsPremium: <input type="checkbox" defaultChecked={this.state.is_premium} onChange={this.changeIsPremium} placeholder="IsPremium" /><br />
-                IsFree: <input type="checkbox" defaultChecked={this.state.is_free} onChange={this.changeIsFree} placeholder="IsFree" /><br />
+                {JSON.stringify(this.state.video)}<br/>
+                Title: <input type="text" defaultValue={this.state.video.title} onChange={this.changeTitle} placeholder="Title" /><br />
+                Author: <input type="text" defaultValue={this.state.video.author} onChange={this.changeAuthor} placeholder="Author" /><br />
+                Genre: <input type="text" defaultValue={this.state.video.genre} onChange={this.changeGenre} placeholder="Genre" /><br />
+                Cast: <input type="text" defaultValue={this.state.video.cast} onChange={this.changeCast} placeholder="Cast" /><br />
+                Price: <input type="number" defaultValue={this.state.video.price} onChange={this.changePrice} placeholder="Price" /><br />
+                Discount: <input type="number" defaultValue={this.state.video.discount} onChange={this.changeDiscount} placeholder="Discount" /><br />
+                IsPremium: <input type="checkbox" defaultChecked={this.state.video.is_premium} onChange={this.changeIsPremium} placeholder="IsPremium" /><br />
+                IsFree: <input type="checkbox" defaultChecked={this.state.video.is_free} onChange={this.changeIsFree} placeholder="IsFree" /><br />
                 Banner: <input type="file" onChange={(e) => this.changeBanner(e.target.files[0])} /><br />
                 Video File: <input type="file" onChange={(e) => this.changeFile(e.target.files[0])} /><br />
                 <input type="submit" value="Add Audio" onClick={this.handleClick} /><br />
 
-                <video controls="true" src={this.state.audio_src}></video><br />
+                <video height="100" controls="true" src={this.state.video_src}></video><br />
                 <img src={this.state.banner_src} alt="img" height="100px" />
                 <hr />
 
@@ -134,6 +141,8 @@ class Video extends React.Component {
                             <th>is_free</th>
                             <th>banner</th>
                             <th>file</th>
+                            <th>Change file</th>
+                            <th>Change Banner</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -154,7 +163,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         addVideo: (video) => dispatch(addVideo(video)),
-        fetchAllVideo: () => dispatch(fetchAllVideo())
+        fetchAllVideo: () => dispatch(fetchAllVideo()),
+        deleteVideo: (id) => dispatch(deleteVideo(id)),
+        updateVideo: (video) => dispatch(updateVideo(video))
     };
 };
 

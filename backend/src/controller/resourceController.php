@@ -1,7 +1,8 @@
 <?php
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-
+use Slim\Http\UploadedFile;
+require '../src/util/pathVariables.php';
 
 function getRequest($sql, $isById) {
     try{
@@ -43,7 +44,47 @@ function postRequest1($sql) {
 function postRequest2($stmt) {
     try{
             $stmt->execute();
-            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_RESOURCE_ADDED);
+            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_ADDED);
+        } catch(PDOException $e){
+            return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
+        }
+}
+
+function deleteRequest($sql)
+{
+    try{
+            // Get DB Object
+            $db = new databaseConnector();
+            // Connect
+            $db = $db->connect();
+
+            $stmt = $db->prepare($sql);
+
+            $stmt->execute();
+            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_DELETE);
+        
+        } catch(PDOException $e){
+            return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
+        }
+}
+
+
+function updateRequest($sql, $file, $banner)
+{
+    try{
+            // Get DB Object
+            $db = new databaseConnector();
+            // Connect
+            $db = $db->connect();
+
+            $stmt = $db->prepare($sql);
+            if(isset($file))
+                $stmt->bindParam(':file', $file);
+            if(isset($banner))
+                $stmt->bindParam(':banner', $banner);
+            $stmt->execute();
+            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_UPDATED);
+        
         } catch(PDOException $e){
             return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
         }
@@ -175,7 +216,7 @@ $app->post('/api/resource/audio/add', function(Request $request, Response $respo
             $stmt->bindParam(':file', $file);
             $stmt->execute();
 
-            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_RESOURCE_ADDED);
+            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_ADDED);
 
         } catch(PDOException $e){
             return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
@@ -218,14 +259,14 @@ $app->post('/api/resource/video/add', function(Request $request, Response $respo
             $stmt->bindParam(':banner', $banner);
 
             $stmt->execute();
-            // $resId = $db->lastInsertId();
+            $resId = $db->lastInsertId();
 
-            // $stmt = $db->prepare($sql2);
-            // $stmt->bindParam(':video_id', $resId);
-            // $stmt->bindParam(':file', $file);
-            // $stmt->execute();
+            $stmt = $db->prepare($sql2);
+            $stmt->bindParam(':video_id', $resId);
+            $stmt->bindParam(':file', $file);
+            $stmt->execute();
 
-            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_RESOURCE_ADDED);
+            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_ADDED);
 
         } catch(PDOException $e){
             return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
@@ -267,3 +308,158 @@ $app->post('/api/resource/book/add', function(Request $request, Response $respon
 
     return postRequest2($stmt);
 });
+
+
+// Delete Book By ID
+$app->post('/api/resource/book/delete', function(Request $request, Response $response){
+    $id = $request->getParam('book_id');
+    $sql = "DELETE FROM BOOK WHERE book_id = $id";
+    return deleteRequest($sql);
+});
+
+// Delete Audio By ID
+$app->post('/api/resource/audio/delete', function(Request $request, Response $response){
+    $id = $request->getParam('audio_id');
+    $sql = "DELETE FROM AUDIO_BLOB WHERE audio_id = $id";
+    return deleteRequest($sql);
+});
+
+// Delete Video By ID
+$app->post('/api/resource/video/delete', function(Request $request, Response $response){
+    $id = $request->getParam('video_id');
+    $sql = "DELETE FROM VIDEO WHERE video_id = $id";
+    return deleteRequest($sql);
+});
+
+// Update Video By ID
+$app->post('/api/resource/video/update', function(Request $request, Response $response){
+    $id = $request->getParam('video_id');
+    $title = $request->getParam('title');
+    $author = $request->getParam('author');
+    $genre = $request->getParam('genre');
+    $cast = $request->getParam('cast');
+    $price = $request->getParam('price');
+    $discount = $request->getParam('discount');
+    $is_premium = $request->getParam('is_premium');
+    $is_free = $request->getParam('is_free');
+    $banner = $request->getParam('banner');
+    $file = $request->getParam('file');
+
+    $updateStr = null;
+    if(!isset($id))
+        return showOutput(STATUS::$_C_RESOURCE_INPUT_UNAVAILABLE, STATUS::$_M_INPUT_UNAVAILABLE);
+
+    if(isset($title))
+        $updateStr .= "title = '$title',";
+    if(isset($author))
+        $updateStr .= "author = '$author',";
+    if(isset($genre))
+        $updateStr .= "genre = '$genre',";
+    if(isset($cast))
+        $updateStr .= "cast = '$cast',";
+    if(isset($is_free))
+        $updateStr .= "is_free = '$is_free',";
+    if(isset($price))
+        $updateStr .= "price = $price,";
+    if(isset($discount))
+        $updateStr .= "discount = $discount,";
+    if(isset($is_premium))
+        $updateStr .= "is_premium = '$is_premium',";
+    if(isset($banner))
+        $updateStr .= "banner = :banner,";
+    if(isset($updateStr))
+        $updateStr = substr($updateStr, 0, -1);
+
+    $sql = "UPDATE  VIDEO 
+                SET $updateStr 
+                WHERE video_id = $id";
+    $sql2 = "UPDATE  VIDEO_BLOB 
+                SET file = :file  
+                WHERE video_id = $id";
+    
+
+// return showOutput(STATUS::$_C_RESOURCE_INPUT_UNAVAILABLE, __DIR__);
+if (isset($file)) {
+    if (!is_dir(PATH::$BASE_PATH)) {
+        mkdir(PATH::$BASE_PATH);
+        if(!is_dir(PATH::$BASE_PATH))
+            return showOutput(STATUS::$_C_RESOURCE_INPUT_UNAVAILABLE, "cant create folder");
+    }
+    
+        $basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
+        $filename = sprintf('%s.%0.8s', $basename, "mp4");
+        file_put_contents(PATH::$BASE_PATH, $file);
+    //    $filename  = moveUploadedFile(PATH::$VIDEO_FILE, $file);
+        return showOutput(STATUS::$_C_RESOURCE_INPUT_UNAVAILABLE, $filename);
+    }
+    return showOutput(STATUS::$_C_RESOURCE_INPUT_UNAVAILABLE, "filename");
+
+    $obj = json_decode(updateRequest($sql, null, $banner));
+    if( ($obj->statusCode === 0 && isset($file)) || ($obj->statusCode !== 0 && !isset($updateStr) && isset($file) ) )  {
+        
+        return updateRequest($sql2, $file, null);
+    }
+    else 
+        return json_encode($obj);
+});
+
+$app->post('/api/resource/audio/update', function(Request $request, Response $response){
+    $title = $request->getParam('title');
+    $author = $request->getParam('author');
+    $genre = $request->getParam('genre');
+    $speaker = $request->getParam('speaker');
+    $price = $request->getParam('price');
+    $discount = $request->getParam('discount');
+    $is_premium = $request->getParam('is_premium');
+    $is_free = $request->getParam('is_free');
+    $banner = $request->getParam('banner');
+    $file = $request->getParam('file');
+
+    $updateStr = "";
+    if(!isset($id))
+        return showOutput(STATUS::$_C_RESOURCE_INPUT_UNAVAILABLE, STATUS::$_M_INPUT_UNAVAILABLE);
+
+    if(isset($title))
+        $updateStr .= "title = '$title',";
+    if(isset($author))
+        $updateStr .= "author = '$author',";
+    if(isset($genre))
+        $updateStr .= "genre = '$genre',";
+    if(isset($speaker))
+        $updateStr .= "cast = '$speaker',";
+    if(isset($is_free))
+        $updateStr .= "is_free = '$is_free',";
+    if(isset($price))
+        $updateStr .= "price = $price,";
+    if(isset($discount))
+        $updateStr .= "discount = $discount,";
+    if(isset($is_premium))
+        $updateStr .= "is_premium = '$is_premium',";
+    if(isset($banner))
+        $updateStr .= "banner = :banner,";
+    
+    $updateStr = substr($updateStr, 0, -1);
+    $sql = "UPDATE  AUDIO 
+                SET $updateStr 
+                WHERE audio_id = $id";
+    return updateRequest($sql, null, $banner);
+});
+
+/**
+ * Moves the uploaded file to the upload directory and assigns it a unique name
+ * to avoid overwriting an existing uploaded file.
+ *
+ * @param string $directory directory to which the file is moved
+ * @param UploadedFile $uploaded file uploaded file to move
+ * @return string filename of moved file
+ */
+function moveUploadedFile($directory, UploadedFile $uploadedFile)
+{
+    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+    $basename = bin2hex(random_bytes(8)); // see http://php.net/manual/en/function.random-bytes.php
+    $filename = sprintf('%s.%0.8s', $basename, $extension);
+
+    $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
+
+    return $filename;
+}

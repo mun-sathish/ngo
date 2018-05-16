@@ -28,7 +28,7 @@ $app->post('/api/user/signup', function(Request $request, Response $response){
     
     if($username === NULL || $password === NULL || $name === NULL || $securityQuestion === NULL || $securityQuestionAnswer === NULL || $phone === NULL || $email === NULL)
     {
-        return showOutput(STATUS::$_C_SIGNUP_FAILURE_INPUT_UNAVAILABLE, STATUS::$_M_SIGNUP_FAILURE_INPUT_UNAVAILABLE);
+        return showOutput(STATUS::$_C_SIGNUP_FAILURE_INPUT_UNAVAILABLE, STATUS::$_M_INPUT_UNAVAILABLE);
     }
 
     $sql = "INSERT INTO user_login (username, name, password, security_question, security_question_answer, phone, email) VALUES
@@ -70,7 +70,7 @@ $app->post('/api/user/update', function(Request $request, Response $response){
     $match = "-";
 
     if($username === NULL) {
-        return showOutput(STATUS::$_C_USER_UPDATE_FIELD_UNAVAILABLE, STATUS::$_M_USER_UPDATE_FIELD_UNAVAILABLE . " = username");
+        return showOutput(STATUS::$_C_USER_UPDATE_FIELD_UNAVAILABLE, STATUS::$_M_INPUT_UNAVAILABLE . " = username");
     }
     // Update Password
     if($password !== NULL) {
@@ -96,7 +96,7 @@ $app->post('/api/user/update', function(Request $request, Response $response){
             WHERE username = '$username'";
         $match = "email";
     } else {
-       return  showOutput(STATUS::$_C_USER_UPDATE_FIELD_UNAVAILABLE,  STATUS::$_M_USER_UPDATE_FIELD_UNAVAILABLE);
+       return  showOutput(STATUS::$_C_USER_UPDATE_FIELD_UNAVAILABLE,  STATUS::$_M_INPUT_UNAVAILABLE);
     }
    
    
@@ -126,7 +126,7 @@ $app->post('/api/user/update', function(Request $request, Response $response){
                 break;
         }
         $stmt->execute();
-        return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_USER_UPDATED);
+        return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_UPDATED);
         
     } catch(PDOException $e){
        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
@@ -141,7 +141,7 @@ $app->post('/api/user/signin', function(Request $request, Response $response){
     
     if($username === NULL || $password === NULL)
     {
-       return $response->write(showOutput(STATUS::$_C_SIGNIN_FAILURE_INPUT_UNAVAILABLE, STATUS::$_M_SIGNIN_FAILURE_INPUT_UNAVAILABLE));
+       return $response->write(showOutput(STATUS::$_C_SIGNIN_FAILURE_INPUT_UNAVAILABLE, STATUS::$_M_INPUT_UNAVAILABLE));
     }
 
     $sql = "SELECT * FROM USER_LOGIN where username = '$username' and password ='$password'";
