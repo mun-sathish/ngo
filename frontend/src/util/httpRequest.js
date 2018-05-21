@@ -24,12 +24,13 @@ export default function sendReq(uri, reqMethod, reqData) {
             },
             body: JSON.stringify(reqData)
         })
-            .then((response) => console.log(response.text())) //console.log(response.text()) 
+            .then((response) => response.json()) //console.log(response.text()) 
             .then(response => {
                 if (response.statusCode !== null && response.statusMessage !== null && response.statusCode !== 0) {
                     console.log("Success but error response, code: " + response.statusCode + " message: " + response.statusMessage);
                     return Promise.reject();
                 }
+                return response
             })
             .catch((err) => {
                 console.log(err)

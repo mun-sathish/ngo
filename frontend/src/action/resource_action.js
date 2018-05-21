@@ -1,20 +1,21 @@
 import { ACTION } from '../util/constants'
 
+
 export function fetchAllBooks() {
     return {
-        type: ACTION.BOOK,
+        type: ACTION.BOOK
     }
 }
 
 export function fetchAllAudio() {
     return {
-        type: ACTION.AUDIO,
+        type: ACTION.AUDIO
     }
 }
 
 export function fetchAllVideo() {
     return {
-        type: ACTION.VIDEO,
+        type: ACTION.VIDEO
     }
 }
 
@@ -32,12 +33,6 @@ export function addAudio(audio) {
     }
 }
 
-export function addVideo(video) {
-    return {
-        type: ACTION.VIDEO_ADD,
-        payload: video
-    }
-}
 
 export function updateBook(book) {
     return {
@@ -58,6 +53,9 @@ export function updateVideo(video) {
         payload: video
     }
 }
+
+
+
 
 export function deleteBook(id) {
     return {

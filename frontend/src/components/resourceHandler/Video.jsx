@@ -1,43 +1,28 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { addVideo, fetchAllVideo, deleteVideo, updateVideo } from '../../action/resource_action'
-import VideoRow from './VideoRow.jsx'
+import { deleteVideo, fetchAllVideo } from '../../action/resource_action'
+import { Jumbotron, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Image, Button, Checkbox } from 'react-bootstrap'
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
+import { BLOB_URI, REQ } from '../../util/constants'
+import './resource.css'
 
 class Video extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            video: {
-                title: "",
-                author: "",
-                genre: "",
-                cast: "",
-                price: -1,
-                discount: -1,
-                is_premium: 0, //boolean
-                is_free: 0, //boolean
-                banner: "",
-                file: "",
-            },
-
-            banner_src: "",
+            banner_src: "/raw/na-image.jpg",
             video_src: ""
         }
     }
 
     componentDidMount() {
+        let user = this.props.users.user;
+        if(user.statusCode === null || (user.statusCode !== null && user.statusCode !== 0))
+            window.location.href="/";
         this.props.fetchAllVideo();
     }
 
-    changeTitle = (e) => this.setState({ video: { ...this.state.video, title: e.target.value } })
-    changeAuthor = (e) => this.setState({ video: { ...this.state.video, author: e.target.value } })
-    changeGenre = (e) => this.setState({ video: { ...this.state.video, genre: e.target.value } })
-    changeCast = (e) => this.setState({ video: { ...this.state.video, cast: e.target.value } })
-    changePrice = (e) => this.setState({ video: { ...this.state.video, price: parseInt(e.target.value, 10) } })
-    changeDiscount = (e) => this.setState({ video: { ...this.state.video, discount: parseInt(e.target.value, 10) } })
-    changeIsPremium = (e) => this.setState({ video: { ...this.state.video, is_premium: e.target.checked } })
-    changeIsFree = (e) => this.setState({ video: { ...this.state.video, is_free: e.target.checked } })
     changeFile = (fileVar) => {
         let temp = fileVar.name.split(".").pop().toLowerCase()
         let allowedFormat = ["mp4"]
@@ -45,14 +30,12 @@ class Video extends React.Component {
         let reader = new FileReader();
         reader.readAsDataURL(fileVar);
         let me = this
-        // me.setState({ src: URL.createObjectURL(e.target.files[0]) })
         reader.onload = function () {
             var fileContent = reader.result;
             if (allowedFormat.indexOf(temp) === -1)
-                alert("Select Image of Mp3 ")
+                alert("Select Video of Mp4 ")
             else {
                 me.setState({ video_src: fileContent })
-                me.setState({ video: { ...me.state.video, file: fileContent } })
             }
         }
     }
@@ -72,100 +55,188 @@ class Video extends React.Component {
                 alert("Select Image of Jpeg, Png, Jpg ")
             else {
                 me.setState({ banner_src: fileContent })
-                me.setState({ video: { ...me.state.video, banner: fileContent } })
             }
         }
     }
 
-
-    handleClick = (e) => {
-        let tempState = this.state.video
-        for (const key of Object.keys(tempState)) {
-            if (typeof tempState[key] === "string")
-                if (tempState[key].length === 0)
-                    tempState[key] = "_blank"
-        }
-        this.props.addVideo(this.state.video);
+    handleClick = (obj) => {
+        this.props.deleteVideo({ video_id: obj.video_id, file: obj.file, banner: obj.banner });
     }
 
-    changeVideoSrc = (content, type) => {
-        if (type === "banner")
-            this.setState({ banner_src: content })
-        else if (type === "file")
-            this.setState({ video_src: content })
+    checkboxCell = (cell, row) => {
+        if (cell === '1')
+            return (<Checkbox checked={true} ></Checkbox>)
+        else
+            return (<Checkbox checked={false} ></Checkbox>)
+            
     }
 
-    handleVideoRowClick = (obj, type) => {
-        if (type === "update")
-            this.props.updateVideo(obj);
-        else if (type === "delete")
-            this.props.deleteVideo({ ...obj.video_id });
+    imageCell = (cell, row) => {
+        return (
+            <Image src={BLOB_URI.VIDEO_BANNER + cell} width="150" />
+        )
+    }
+
+    videoCell = (cell, row) => {
+        return (
+            <video controls="true" width="250" src={BLOB_URI.VIDEO_FILE + cell}></video>
+        )
+    }
+
+    deleteCell = (cell, row) => {
+        return (
+            <Button bsStyle="danger" onClick={() => this.handleClick(row)}>Delete</Button>
+        )
     }
 
     render() {
-        let video = this.props.video.map(item => {
-            return (
-                <VideoRow changeVideoSrc={this.changeVideoSrc} handleVideoRowClick={this.handleVideoRowClick} data={item} />
-            )
-        })
         return (
             <div>
-                {JSON.stringify(this.state.video)}<br />
-                Title: <input type="text" defaultValue={this.state.video.title} onChange={this.changeTitle} placeholder="Title" /><br />
-                Author: <input type="text" defaultValue={this.state.video.author} onChange={this.changeAuthor} placeholder="Author" /><br />
-                Genre: <input type="text" defaultValue={this.state.video.genre} onChange={this.changeGenre} placeholder="Genre" /><br />
-                Cast: <input type="text" defaultValue={this.state.video.cast} onChange={this.changeCast} placeholder="Cast" /><br />
-                Price: <input type="number" defaultValue={this.state.video.price} onChange={this.changePrice} placeholder="Price" /><br />
-                Discount: <input type="number" defaultValue={this.state.video.discount} onChange={this.changeDiscount} placeholder="Discount" /><br />
-                IsPremium: <input type="checkbox" defaultChecked={this.state.video.is_premium} onChange={this.changeIsPremium} placeholder="IsPremium" /><br />
-                IsFree: <input type="checkbox" defaultChecked={this.state.video.is_free} onChange={this.changeIsFree} placeholder="IsFree" /><br />
-                Banner: <input type="file" onChange={(e) => this.changeBanner(e.target.files[0])} /><br />
-                Video File: <input type="file" onChange={(e) => this.changeFile(e.target.files[0])} /><br />
-                <input type="submit" value="Add Audio" onClick={this.handleClick} /><br />
+                <Grid>
+                    <Row>
+                        <Col xs={6}>
+                            <form method={REQ.VIDEO_ADD.METHOD} action={REQ.VIDEO_ADD.URI} enctype={REQ.VIDEO_ADD.enctype}>
 
-                <video height="100" controls="true" src={this.state.video_src}></video><br />
-                <img src={this.state.banner_src} alt="img" height="100px" />
-                <hr />
+                                <FormGroup>
+                                    <Col xs={6}>
+                                        <ControlLabel>Title</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="title"
+                                            placeholder="Enter Title"
+                                        />
+                                    </Col>
+                                    <Col xs={6}>
+                                        <ControlLabel>Author</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="author"
+                                            placeholder="Enter Author"
+                                        />
+                                    </Col>
+                                    <Col xs={6}>
+                                        <ControlLabel>Genre</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="genre"
+                                            placeholder="Enter Genre"
+                                        />
+                                    </Col>
+                                    <Col xs={6}>
+                                        <ControlLabel>Cast</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="cast"
+                                            placeholder="Enter Cast"
+                                        />
+                                    </Col>
+                                    
+                                    <Col xs={6}>
+                                        <Col xs={12}>
+                                            <ControlLabel>Banner (Jpg, Jpeg, Png)</ControlLabel>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <FormControl
+                                                id="banner"
+                                                type="file"
+                                                name="banner"
+                                                accept="image/jpeg, image/png, image/jpg"
+                                                className="inputfile"
+                                                onChange={(e) => this.changeBanner(e.target.files[0])}
+                                            />
+                                            <label for="banner"><strong>Choose a file</strong></label>
+                                        </Col>
+                                    </Col>
+                                    <Col xs={6}>
+                                        <Col xs={12}>
+                                            <ControlLabel>Video File (mp4)  </ControlLabel>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <FormControl
+                                                id="file"
+                                                type="file"
+                                                name="file"
+                                                className="inputfile"
+                                                accept="video/mp4"
+                                                onChange={(e) => this.changeFile(e.target.files[0])}
+                                            />
+                                            <label for="file"><strong>Choose a file</strong></label>
+                                        </Col>
+                                    </Col>
+                                    <Col xs={3}  >
 
-                <h1>OUTPUT:</h1>
-                <table border="2">
-                    <thead>
-                        <tr>
-                            <th>title</th>
-                            <th>author</th>
-                            <th>genre</th>
-                            <th>cast</th>
-                            <th>price</th>
-                            <th>discount</th>
-                            <th>is_premium</th>
-                            <th>is_free</th>
-                            <th>banner</th>
-                            <th>file</th>
-                            <th>Change file</th>
-                            <th>Change Banner</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {video}
-                    </tbody>
-                </table>
+                                        <ControlLabel>Is Premium?
+                                            <FormControl
+                                                type="checkbox"
+                                                name="is_premium"
+                                                value="1"
+                                            />
+                                            </ControlLabel>
+                                    </Col>
+                                    <Col xs={9}>
+                                    <Button type="submit" bsStyle="primary">Submit</Button>
+                                    </Col>
+                                </FormGroup>
+
+                            </form>
+                        </Col>
+
+                        <Col xs={6} className="show-grid text-center">
+                            <Row>
+                                <Col xs={12}>
+                                    <Image src={this.state.banner_src} height="200px" />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col xs={12}>
+                                    <video controls="true" src={this.state.video_src}></video>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    <hr />
+                </Grid>
+
+                <Grid>
+                    <Row>
+                        <Jumbotron>
+                            <h1><center><bold>Resource:</bold> All Video Data</center></h1>
+                        </Jumbotron>
+                    </Row>
+                    <Row>
+                        <Col xs={12}>
+                            <BootstrapTable data={this.props.video} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination>
+                                <TableHeaderColumn width='100' dataAlign="center" dataFormat={this.deleteCell} />
+                                <TableHeaderColumn width='100' dataField='video_id' isKey hidden>ID</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='title' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} >Title</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='author' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Author</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='genre' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Genre</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='cast' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Speaker</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='is_premium' dataAlign="center" dataFormat={this.checkboxCell} >Is Premium?  </TableHeaderColumn>
+                                <TableHeaderColumn width='150' dataField='banner' dataAlign="center" dataFormat={this.imageCell}  >Banner </TableHeaderColumn>
+                                <TableHeaderColumn width='350' dataField='file' dataAlign="center" dataFormat={this.videoCell} >Video</TableHeaderColumn>
+
+                            </BootstrapTable>
+                        </Col>
+                    </Row>
+                </Grid>
             </div>
         )
     }
 }
 
+
 const mapStateToProps = (state) => {
     return {
-        video: state.videoReducer
+        video: state.videoReducer,
+        users: state.userLoginDetails
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addVideo: (video) => dispatch(addVideo(video)),
         fetchAllVideo: () => dispatch(fetchAllVideo()),
         deleteVideo: (id) => dispatch(deleteVideo(id)),
-        updateVideo: (video) => dispatch(updateVideo(video))
     };
 };
 

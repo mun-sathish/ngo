@@ -4,9 +4,12 @@ import { ACTION, REQ } from '../util/constants'
 const dispatchHandler = store => next => action => {
     // console.log("pre dispatch: " + action);
     switch (action.type) {
+        
         case ACTION.USER_LOGIN:
             sendReq(REQ.USER_LOGIN.URI, REQ.USER_LOGIN.METHOD, action.payload)
                 .then((jsonResponse) => {
+                    console.log("inside disapather")
+                    console.log(jsonResponse);
                     action.payload = jsonResponse;
                     return next(action);
                 });
@@ -53,21 +56,36 @@ const dispatchHandler = store => next => action => {
         case ACTION.BOOK_DELETE:
             sendReq(REQ.BOOK_DELETE.URI, REQ.BOOK_DELETE.METHOD, action.payload)
                 .then(jsonResponse => {
-                    return next(action)
+                    sendReq(REQ.BOOK_ALL.URI, REQ.BOOK_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.BOOK
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
                 })
             break;
 
         case ACTION.AUDIO_DELETE:
-            sendReq(REQ.AUDIO_DELETE.URI, REQ.VIDEO_DELETE.METHOD, action.payload)
+            sendReq(REQ.AUDIO_DELETE.URI, REQ.AUDIO_DELETE.METHOD, action.payload)
                 .then(jsonResponse => {
-                    return next(action)
+                    sendReq(REQ.AUDIO_ALL.URI, REQ.AUDIO_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.AUDIO
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
                 })
             break;
 
         case ACTION.VIDEO_DELETE:
             sendReq(REQ.VIDEO_DELETE.URI, REQ.VIDEO_DELETE.METHOD, action.payload)
                 .then(jsonResponse => {
-                    return next(action)
+                    sendReq(REQ.VIDEO_ALL.URI, REQ.VIDEO_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.VIDEO
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
                 })
             break;
 

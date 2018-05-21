@@ -9,7 +9,9 @@ export function userLoginDetails(state, action) {
 
         default:
             return {
-                user: {}
+                user: {
+                    statusCode : 0
+                }
             }
     }
 }

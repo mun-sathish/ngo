@@ -21,10 +21,20 @@ export const ACTION = {
     VIDEO: "video"
 }
 
-const BASE_URI = "http://ngo.com/api"
+const BASE_URI = "http://awakenyourselfwithinyou.org/ngo/backend/public/api"
+const BASE = "http://awakenyourselfwithinyou.org/ngo/uploads/blob"
+
+export const BLOB_URI = {
+    VIDEO_BANNER: BASE + "/video/banner/",
+    VIDEO_FILE: BASE + "/video/file/",
+    AUDIO_BANNER: BASE + "/audio/banner/",
+    AUDIO_FILE: BASE + "/audio/file/",
+    BOOK_BANNER: BASE + "/book/banner/"
+}
 export const REQ = {
+
     USER_LOGIN: {
-        URI: BASE_URI + "/user/signin",
+        URI: BASE_URI + "/user/sign-in",
         METHOD: "post"
     },
     BOOK_UPDATE: {
@@ -53,26 +63,29 @@ export const REQ = {
     },
     BOOK_ADD: {
         URI: BASE_URI + "/resource/book/add",
-        METHOD: "post"
+        METHOD: "post",
+        enctype: "multipart/form-data"
     },
     AUDIO_ADD: {
         URI: BASE_URI + "/resource/audio/add",
-        METHOD: "post"
+        METHOD: "post",
+        enctype: "multipart/form-data"
     },
     VIDEO_ADD: {
         URI: BASE_URI + "/resource/video/add",
-        METHOD: "post"
+        METHOD: "post",
+        enctype: "multipart/form-data"
     },
     BOOK_ALL: {
         URI: BASE_URI + "/resource/book",
         METHOD: "get"
     },
     AUDIO_ALL: {
-        URI: BASE_URI + "/resource/audio/admin",
+        URI: BASE_URI + "/resource/audio",
         METHOD: "get"
     },
     VIDEO_ALL: {
-        URI: BASE_URI + "/resource/video/admin",
+        URI: BASE_URI + "/resource/video",
         METHOD: "get"
     },
 

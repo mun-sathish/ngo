@@ -1,39 +1,28 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { addAudio, fetchAllAudio } from '../../action/resource_action'
+import { deleteAudio, fetchAllAudio } from '../../action/resource_action'
+import { Jumbotron, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Image, Button, Checkbox } from 'react-bootstrap'
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
+import { BLOB_URI, REQ } from '../../util/constants'
+import './resource.css'
+
 class Audio extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            title: "",
-            author: "",
-            genre: "",
-            speaker: "",
-            price: -1,
-            discount: -1,
-            is_premium: 0,
-            is_free: 0,
-            banner: "",
-            file: "",
-
-            banner_src: "",
+            banner_src: "/raw/na-image.jpg",
             audio_src: ""
         }
     }
 
     componentDidMount() {
+        let user = this.props.users.user;
+        if(user.statusCode === null || (user.statusCode !== null && user.statusCode !== 0))
+            window.location.href="/";
         this.props.fetchAllAudio();
     }
 
-    changeTitle = (e) => this.setState({ title: e.target.value })
-    changeAuthor = (e) => this.setState({ author: e.target.value })
-    changeGenre = (e) => this.setState({ genre: e.target.value })
-    changeSpeaker = (e) => this.setState({ speaker: e.target.value })
-    changePrice = (e) => this.setState({ price: parseInt(e.target.value, 10) })
-    changeDiscount = (e) => this.setState({ discount: parseInt(e.target.value, 10) })
-    changeIsPremium = (e) => this.setState({ is_premium: e.target.checked })
-    changeIsFree = (e) => this.setState({ is_free: e.target.checked })
     changeFile = (fileVar) => {
         let temp = fileVar.name.split(".").pop().toLowerCase()
         let allowedFormat = ["mp3"]
@@ -41,14 +30,12 @@ class Audio extends React.Component {
         let reader = new FileReader();
         reader.readAsDataURL(fileVar);
         let me = this
-        // me.setState({ src: URL.createObjectURL(e.target.files[0]) })
         reader.onload = function () {
             var fileContent = reader.result;
             if (allowedFormat.indexOf(temp) === -1)
-                alert("Select Image of Mp3 ")
+                alert("Select Audio of Mp3 ")
             else {
                 me.setState({ audio_src: fileContent })
-                me.setState({ file: fileContent })
             }
         }
     }
@@ -68,78 +55,179 @@ class Audio extends React.Component {
                 alert("Select Image of Jpeg, Png, Jpg ")
             else {
                 me.setState({ banner_src: fileContent })
-                me.setState({ banner: fileContent })
             }
         }
     }
 
-    handleClick = (e) => {
-        let tempState = this.state
-        for (const key of Object.keys(tempState)) {
-            if (typeof tempState[key] === "string")
-                if (tempState[key].length === 0)
-                    tempState[key] = "_blank"
-        }
-        this.props.addAudio(this.state);
+    handleClick = (obj) => {
+        this.props.deleteAudio({ audio_id: obj.audio_id, file: obj.file, banner: obj.banner });
+    }
+
+    handleAudioRowClick = (obj) => {
+        this.props.deleteAudio({ audio_id: obj.audio_id, file: obj.file, banner: obj.banner });
+    }
+
+    checkboxCell = (cell, row) => {
+        if (cell === '1')
+            return (<Checkbox checked={true} ></Checkbox>)
+        else
+            return (<Checkbox checked={false} ></Checkbox>)
+            
+    }
+
+    imageCell = (cell, row) => {
+        return (
+            <Image src={BLOB_URI.AUDIO_BANNER + cell} width="150" />
+        )
+    }
+
+    audioCell = (cell, row) => {
+        return (
+            <audio controls="true" width="150" src={BLOB_URI.AUDIO_FILE + cell}></audio>
+        )
+    }
+
+    deleteCell = (cell, row) => {
+        return (
+            <Button bsStyle="danger" onClick={() => this.handleClick(row)}>Delete</Button>
+        )
     }
 
     render() {
-        // console.log(this.props.audio)
-        let audio = this.props.audio.map(item => {
-            return (
-                <tr key={item.audio_id}>
-                    <td>{item.title}</td>
-                    <td>{item.author}</td>
-                    <td>{item.genre}</td>
-                    <td>{item.speaker}</td>
-                    <td>{item.price}</td>
-                    <td>{item.discount}</td>
-                    <td>{String(item.is_premium)}</td>
-                    <td>{String(item.is_free)}</td>
-                    <td><img src={item.banner} alt="img" height="100px" /></td>
-                    <td> <audio controls="true" src={item.file}></audio></td>
-                </tr>
-            )
-        })
         return (
             <div>
-                {JSON.stringify(this.state)}<br />
-                Title: <input type="text" defaultValue={this.state.title} onChange={this.changeTitle} placeholder="Title" /><br />
-                Author: <input type="text" defaultValue={this.state.author} onChange={this.changeAuthor} placeholder="Author" /><br />
-                Genre: <input type="text" defaultValue={this.state.genre} onChange={this.changeGenre} placeholder="Genre" /><br />
-                Speaker: <input type="text" defaultValue={this.state.speaker} onChange={this.changeSpeaker} placeholder="Speaker" /><br />
-                Price: <input type="number" defaultValue={this.state.price} onChange={this.changePrice} placeholder="Price" /><br />
-                Discount: <input type="number" defaultValue={this.state.discount} onChange={this.changeDiscount} placeholder="Discount" /><br />
-                IsPremium: <input type="checkbox" defaultChecked={this.state.is_premium} onChange={this.changeIsPremium} placeholder="IsPremium" /><br />
-                IsFree: <input type="checkbox" defaultChecked={this.state.is_free} onChange={this.changeIsFree} placeholder="IsFree" /><br />
-                Banner: <input type="file" onChange={(e) => this.changeBanner(e.target.files[0])} /><br />
-                Audio File: <input type="file" onChange={(e) => this.changeFile(e.target.files[0])} /><br />
-                <input type="submit" value="Add Audio" onClick={this.handleClick} /><br />
+                <Grid>
+                    <Row>
+                        <Col xs={6}>
+                            <form method={REQ.AUDIO_ADD.METHOD} action={REQ.AUDIO_ADD.URI} enctype={REQ.AUDIO_ADD.enctype}>
 
-                <audio controls="true" src={this.state.audio_src}></audio><br />
-                <img src={this.state.banner_src} alt="img" height="100px" />
-                <hr />
+                                <FormGroup>
+                                    <Col xs={6}>
+                                        <ControlLabel>Title</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="title"
+                                            placeholder="Enter Title"
+                                        />
+                                    </Col>
+                                    <Col xs={6}>
+                                        <ControlLabel>Author</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="author"
+                                            placeholder="Enter Author"
+                                        />
+                                    </Col>
+                                    <Col xs={6}>
+                                        <ControlLabel>Genre</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="genre"
+                                            placeholder="Enter Genre"
+                                        />
+                                    </Col>
+                                    <Col xs={6}>
+                                        <ControlLabel>Speaker</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="speaker"
+                                            placeholder="Enter Speaker"
+                                        />
+                                    </Col>
+                                    
+                                    <Col xs={6}>
+                                        <Col xs={12}>
+                                            <ControlLabel>Banner (Jpg, Jpeg, Png)</ControlLabel>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <FormControl
+                                                id="banner"
+                                                type="file"
+                                                name="banner"
+                                                accept="image/jpeg, image/png, image/jpg"
+                                                className="inputfile"
+                                                onChange={(e) => this.changeBanner(e.target.files[0])}
+                                            />
+                                            <label for="banner"><strong>Choose a file</strong></label>
+                                        </Col>
+                                    </Col>
+                                    <Col xs={6}>
+                                        <Col xs={12}>
+                                            <ControlLabel>Audio File (mp3)  </ControlLabel>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <FormControl
+                                                id="file"
+                                                type="file"
+                                                name="file"
+                                                className="inputfile"
+                                                accept="audio/mp3"
+                                                onChange={(e) => this.changeFile(e.target.files[0])}
+                                            />
+                                            <label for="file"><strong>Choose a file</strong></label>
+                                        </Col>
+                                    </Col>
+                                    <Col xs={3}  >
 
-                <h1>OUTPUT:</h1>
-                <table border="2">
-                    <thead>
-                        <tr>
-                            <th>title</th>
-                            <th>author</th>
-                            <th>genre</th>
-                            <th>speaker</th>
-                            <th>price</th>
-                            <th>discount</th>
-                            <th>is_premium</th>
-                            <th>is_free</th>
-                            <th>banner</th>
-                            <th>file</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {audio}
-                    </tbody>
-                </table>
+                                        <ControlLabel>Is Premium?
+                                            <FormControl
+                                                type="checkbox"
+                                                name="is_premium"
+                                                value="1"
+                                            />
+                                            </ControlLabel>
+                                    </Col>
+                                    <Col xs={9}>
+                                    <Button type="submit" bsStyle="primary">Submit</Button>
+                                    </Col>
+                                </FormGroup>
+
+                            </form>
+                        </Col>
+
+                        <Col xs={6} className="show-grid text-center">
+                            <Row>
+                                <Col xs={12}>
+                                    <Image src={this.state.banner_src} height="200px" />
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col xs={12}>
+                                    <audio controls="true" src={this.state.audio_src}></audio>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    <hr />
+                    <Row className="show-grid text-center">
+                        <Col xs={12}>
+                        </Col>
+                    </Row>
+                </Grid>
+
+                <Grid>
+                    <Row>
+                        <Jumbotron>
+                            <h1><center><bold>Resource:</bold> Audio Data</center></h1>
+                        </Jumbotron>
+                    </Row>
+                    <Row>
+                        <Col xs={12}>
+                            <BootstrapTable data={this.props.audio} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination>
+                                <TableHeaderColumn width='100' dataAlign="center" dataFormat={this.deleteCell} />
+                                <TableHeaderColumn width='100' dataField='audio_id' isKey hidden>ID</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='title' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} >Title</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='author' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Author</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='genre' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Genre</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='speaker' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Speaker</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='is_premium' dataAlign="center" dataFormat={this.checkboxCell} >Is Premium?  </TableHeaderColumn>
+                                <TableHeaderColumn width='150' dataField='banner' dataAlign="center" dataFormat={this.imageCell}  >Banner </TableHeaderColumn>
+                                <TableHeaderColumn width='350' dataField='file' dataAlign="center" dataFormat={this.audioCell} >Audio</TableHeaderColumn>
+
+                            </BootstrapTable>
+                        </Col>
+                    </Row>
+                </Grid>
             </div>
         )
     }
@@ -148,13 +236,14 @@ class Audio extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        audio: state.audioReducer
+        audio: state.audioReducer,
+        users: state.userLoginDetails
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addAudio: (audio) => dispatch(addAudio(audio)),
+        deleteAudio: (id) => dispatch(deleteAudio(id)),
         fetchAllAudio: () => dispatch(fetchAllAudio())
     };
 };

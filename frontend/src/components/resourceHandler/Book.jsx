@@ -1,131 +1,228 @@
 import React from "react";
 import { connect } from 'react-redux';
-import { addBook, fetchAllBooks } from '../../action/resource_action'
+import { deleteBook, fetchAllBooks } from '../../action/resource_action'
+import { Jumbotron, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Image, Button } from 'react-bootstrap'
+import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
+import { BLOB_URI, REQ } from '../../util/constants'
+import './resource.css'
 
 class Book extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            name: "",
-            author: "",
-            isbn: "",
-            publisher: "",
-            edition: "",
-            edition_number: "",
-            no_of_pages: "",
-            binding: "",
-            flipkart_link: "",
-            amazon_link: "",
-            banner: "",
-
-            src: ""
+            banner_src: "/raw/na-image.jpg"
         }
     }
 
     componentDidMount() {
+        let user = this.props.users.user;
+        if(user.statusCode === null || (user.statusCode !== null && user.statusCode !== 0))
+            window.location.href="/";
         this.props.fetchAllBooks();
     }
 
-    changeName = (e) => this.setState({ name: e.target.value })
-    changeAuthor = (e) => this.setState({ author: e.target.value })
-    changeIsbn = (e) => this.setState({ isbn: e.target.value })
-    changePublisher = (e) => this.setState({ publisher: e.target.value })
-    changeEdition = (e) => this.setState({ edition: e.target.value })
-    changeEditionNumber = (e) => this.setState({ edition_number: e.target.value })
-    changeNoOfPages = (e) => this.setState({ no_of_pages: e.target.value })
-    changeBinding = (e) => this.setState({ binding: e.target.value })
-    changeFlipkartLink = (e) => this.setState({ flipkart_link: e.target.value })
-    changeAmazonLink = (e) => this.setState({ amazon_link: e.target.value })
-    changeBanner = (e) => {
-        let temp = e.target.value.split(".").pop().toLowerCase()
+    changeBanner = (fileVar) => {
+        let temp = fileVar.name.split(".").pop().toLowerCase()
         let allowedFormat = ["png", "jpg", "jpeg"]
 
         let reader = new FileReader();
-        reader.readAsDataURL(e.target.files[0]);
+        reader.readAsDataURL(fileVar);
         let me = this
-        // me.setState({ src: URL.createObjectURL(e.target.files[0]) })
         reader.onload = function () {
             var fileContent = reader.result;
 
             if (allowedFormat.indexOf(temp) === -1)
                 alert("Select Image of Jpeg, Png, Jpg ")
             else {
-                me.setState({ src: fileContent })
-                me.setState({ banner: fileContent })
+                me.setState({ banner_src: fileContent })
             }
         }
-
     }
 
-    handleClick = (e) => {
-        let tempState = this.state
-        for (const key of Object.keys(tempState)) {
-            if (typeof tempState[key] === "string")
-                if (tempState[key].length === 0)
-                    tempState[key] = "_blank"
-        }
-        this.props.addBook(this.state);
+
+    handleClick = (obj) => {
+        this.props.deleteBook({ book_id: obj.book_id, banner: obj.banner });
+    }
+
+    linkCell = (cell, row) => {
+        return (
+            <Button  bsStyle="success" target="_blank" href={cell}>Link</Button>
+        )
+    }
+
+    deleteCell = (cell, row) => {
+        return (
+            <Button bsStyle="danger" onClick={() => this.handleClick(row)}>Delete</Button>
+        )
+    }
+
+    imageCell = (cell, row) => {
+        return (
+            <Image src={BLOB_URI.BOOK_BANNER + cell} height="100" />
+        )
     }
 
     render() {
-        let books = this.props.books.map(item => {
-            return (
-                <tr key={item.book_id}>
-                    <td>{item.name}</td>
-                    <td>{item.author}</td>
-                    <td>{item.isbn}</td>
-                    <td>{item.publisher}</td>
-                    <td>{item.edition}</td>
-                    <td>{item.edition_number}</td>
-                    <td>{item.no_of_pages}</td>
-                    <td>{item.binding}</td>
-                    <td>{item.flipkart_link}</td>
-                    <td>{item.amazon_link}</td>
-                    <td><img src={item.banner} alt="err" height="100px" /></td>
-                </tr>
-            )
-        })
         return (
             <div>
-                Name: <input type="text" defaultValue={this.state.name} onChange={this.changeName} placeholder="Name" /><br />
-                Author: <input type="text" defaultValue={this.state.author} onChange={this.changeAuthor} placeholder="Author" /><br />
-                Isbn: <input type="text" defaultValue={this.state.isbn} onChange={this.changeIsbn} placeholder="Isbn" /><br />
-                Publisher: <input type="text" defaultValue={this.state.publisher} onChange={this.changePublisher} placeholder="Publisher" /><br />
-                Edition: <input type="text" defaultValue={this.state.edition} onChange={this.changeEdition} placeholder="Edition" /><br />
-                Edition Number: <input type="text" defaultValue={this.edition_number} onChange={this.changeEditionNumber} placeholder="Edition Number" /><br />
-                No of pages: <input type="text" defaultValue={this.state.no_of_pages} onChange={this.changeNoOfPages} placeholder="no_of_pages" /><br />
-                Binding: <input type="text" defaultValue={this.state.binding} onChange={this.changeBinding} placeholder="Binding" /><br />
-                Flipkart Link: <input type="text" defaultValue={this.state.flipkart_link} onChange={this.changeFlipkartLink} placeholder="flipkart_link" /><br />
-                Amazon Link: <input type="text" defaultValue={this.state.amazon_link} onChange={this.changeAmazonLink} placeholder="amazon_link" /><br />
-                Banner: <input type="file" defaultValue={this.state.banner} onChange={this.changeBanner} placeholder="Banner" /><br />
-                <input type="submit" value="Add Book" onClick={this.handleClick} /><br />
 
-                <img src={this.state.src} alt="test" height="100px" />
+                <Grid>
+                    <Row>
+                        <Col xs={6}>
+                            <form method={REQ.BOOK_ADD.METHOD} action={REQ.BOOK_ADD.URI} enctype={REQ.BOOK_ADD.enctype}>
+
+                                <FormGroup>
+                                    <Col xs={6}>
+                                        <ControlLabel>Name</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="name"
+                                            placeholder="Enter Name"
+                                        />
+                                    </Col>
+                                    <Col xs={6}>
+                                        <ControlLabel>Author</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="author"
+                                            placeholder="Enter Author"
+                                        />
+                                    </Col>
+                                    <Col xs={6}>
+                                        <ControlLabel>ISBN</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="isbn"
+                                            placeholder="Enter ISBN"
+                                        />
+                                    </Col>
+                                    <Col xs={6}>
+                                        <ControlLabel>Publisher</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="publisher"
+                                            placeholder="Enter Publisher"
+                                        />
+                                    </Col>
+
+                                    <Col xs={6}>
+                                        <ControlLabel>Edition</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="edition"
+                                            placeholder="Enter Edition"
+                                        />
+                                    </Col>
+
+                                    <Col xs={6}>
+                                        <ControlLabel>Edition Number</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="edition_number"
+                                            placeholder="Enter Edition No"
+                                        />
+                                    </Col>
+
+                                    <Col xs={6}>
+                                        <ControlLabel>No of Pages</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="no_of_pages"
+                                            placeholder="Enter Pages"
+                                        />
+                                    </Col>
+
+                                    <Col xs={6}>
+                                        <ControlLabel>Binding</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="binding"
+                                            placeholder="Enter Binding"
+                                        />
+                                    </Col>
+
+                                    <Col xs={6}>
+                                        <ControlLabel>Flipkart Link</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="flipkart_link"
+                                            placeholder="Enter Flipkart Link"
+                                        />
+                                    </Col>
+
+                                    <Col xs={6}>
+                                        <ControlLabel>Amazon Link</ControlLabel>
+                                        <FormControl
+                                            type="text"
+                                            name="amazon_link"
+                                            placeholder="Enter Amazon Link"
+                                        />
+                                    </Col>
+
+                                    <Col xs={12}>
+                                        <Col xs={12}>
+                                            <ControlLabel>Banner (Jpg, Jpeg, Png)</ControlLabel>
+                                        </Col>
+                                        <Col xs={12}>
+                                            <FormControl
+                                                id="banner"
+                                                type="file"
+                                                name="banner"
+                                                accept="image/jpeg, image/png, image/jpg"
+                                                className="inputfile"
+                                                onChange={(e) => this.changeBanner(e.target.files[0])}
+                                            />
+                                            <label for="banner"><strong>Choose a file</strong></label>
+                                        </Col>
+                                    </Col>
+                                    <Col xs={12}>
+                                        <Button type="submit" bsStyle="primary">Submit</Button>
+                                    </Col>
+                                </FormGroup>
+
+                            </form>
+                        </Col>
+
+                        <Col xs={6} className="show-grid text-center">
+                            <Row>
+                                <Col xs={12}>
+                                    <Image src={this.state.banner_src} height="200px" />
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                    <hr />
+                </Grid>
+
                 <hr />
 
-                <h1>OUTPUT:</h1>
-                <table border="2">
-                    <thead>
-                        <tr>
-                            <th>name</th>
-                            <th>author</th>
-                            <th>isbn</th>
-                            <th>publisher</th>
-                            <th>edition</th>
-                            <th>edition_number</th>
-                            <th>no_of_pages</th>
-                            <th>binding</th>
-                            <th>flipkart_link</th>
-                            <th>amazon_link</th>
-                            <th>banner</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {books}
-                    </tbody>
-
-                </table>
+                 <Grid>
+                    <Row>
+                        <Jumbotron>
+                            <h1><center><bold>Resource:</bold> All Book Data</center></h1>
+                        </Jumbotron>
+                    </Row>
+                    <Row>
+                        <Col xs={12}>
+                            <BootstrapTable data={this.props.books} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination>
+                                <TableHeaderColumn width='100' dataAlign="center" dataFormat={this.deleteCell} />
+                                <TableHeaderColumn width='100' dataField='book_id' isKey hidden>ID</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='name' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} >Name</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='author' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Author</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='isbn' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>ISBN</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='publisher' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Publisher</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='edition' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Edition</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='edition_number' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Edition Number</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='no_of_pages' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>No of Pages</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='binding' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Binding</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='flipkart_link' dataAlign="center" dataFormat={this.linkCell} tdStyle={{ whiteSpace: 'normal' }}>Flipkart Link</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataField='amazon_link' dataAlign="center" dataFormat={this.linkCell} tdStyle={{ whiteSpace: 'normal' }}>Amazon Link</TableHeaderColumn>
+                                <TableHeaderColumn width='150' dataField='banner' dataAlign="center" dataFormat={this.imageCell}  >Banner </TableHeaderColumn>
+                            </BootstrapTable>
+                        </Col>
+                    </Row>
+                </Grid>
 
             </div>
         );
@@ -135,13 +232,14 @@ class Book extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        books: state.booksReducer
+        books: state.booksReducer,
+        users: state.userLoginDetails
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        addBook: (book) => dispatch(addBook(book)),
+        deleteBook: (id) => dispatch(deleteBook(id)),
         fetchAllBooks: () => dispatch(fetchAllBooks())
     };
 };
