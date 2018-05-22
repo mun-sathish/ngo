@@ -12,6 +12,7 @@ GET /api/security-question
 GET /api/security_question/{id}
 POST /api/security-question/add 
     - I-FIELDS: question
+POST /api/security-question/delete/{id}
 
 
 =====================================================

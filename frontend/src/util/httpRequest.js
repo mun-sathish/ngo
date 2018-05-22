@@ -13,6 +13,7 @@ export default function sendReq(uri, reqMethod, reqData) {
             .then((response) => response.json())
             .catch((err) => {
                 console.log(err)
+                return Promise.reject();
             })
     }
     else {
