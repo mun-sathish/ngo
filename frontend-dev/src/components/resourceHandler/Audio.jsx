@@ -5,13 +5,14 @@ import { Jumbotron, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Image,
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { BLOB_URI, REQ } from '../../util/constants'
 import './resource.css'
+import naImage from '../../raw/na-image.jpg'
 
 class Audio extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            banner_src: "/raw/na-image.jpg",
+            banner_src: naImage,
             audio_src: ""
         }
     }
@@ -99,7 +100,7 @@ class Audio extends React.Component {
                 <Grid>
                     <Row>
                         <Col xs={6}>
-                            <form method={REQ.AUDIO_ADD.METHOD} action={REQ.AUDIO_ADD.URI} enctype={REQ.AUDIO_ADD.enctype}>
+                            <form target="_blank" method={REQ.AUDIO_ADD.METHOD} action={REQ.AUDIO_ADD.URI} enctype={REQ.AUDIO_ADD.enctype}>
 
                                 <FormGroup>
                                     <Col xs={6}>

@@ -17,6 +17,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "deploy": "((rmdir \"../frontend/\" /S /Q && mkdir \"../frontend\") || mkdir \"../frontend\") && xcopy build \"../frontend/*\" /e /i",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }

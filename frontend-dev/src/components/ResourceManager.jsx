@@ -12,13 +12,13 @@ class ResourceManager extends React.Component {
 
     render() {
         return (
-            <Router>
+            <Router basename="/ngo/frontend/resource">
                 <div>
                     <CustomNavbar />
-                    <Route exact path="/resource/home" component={ResourceHome} />
-                    <Route exact path="/resource/book" component={Book} />
-                    <Route path="/resource/audio" component={Audio} />
-                    <Route path="/resource/video" component={Video} />
+                    <Route exact path="/home" component={ResourceHome} />
+                    <Route exact path="/book" component={Book} />
+                    <Route path="/audio" component={Audio} />
+                    <Route path="/video" component={Video} />
                     <Route path="/security-question" component={SecurityQuestion} />
                 </div>
             </Router>

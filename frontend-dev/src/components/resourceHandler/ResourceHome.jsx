@@ -1,6 +1,7 @@
 import React from "react";
 import { Jumbotron, Button, Grid, Row, Col, Image } from 'react-bootstrap'
 import store from '../../store/store'
+import sathish from '../../raw/sathish.jpg'
 
 export default class ResourceHome extends React.Component {
 
@@ -30,7 +31,7 @@ export default class ResourceHome extends React.Component {
                     <Row className="show-grid-text-center">
                         <Col xs={12} sm={12} className="person-wrapper">
                         <center>
-                            <Image src="/raw/sathish.jpg" circle className="profile-pic"  />
+                            <Image src={sathish} circle className="profile-pic"  />
                             <br/><br/>Design and developed by
                             <h3>Sathish Venkatesh Dustakar</h3>
                             <Button bsStyle="danger" href="https://mun-sathish.firebaseapp.com" target="_blank">About Developer</Button>

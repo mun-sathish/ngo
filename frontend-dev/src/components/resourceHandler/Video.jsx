@@ -5,13 +5,14 @@ import { Jumbotron, FormGroup, ControlLabel, FormControl, Grid, Row, Col, Image,
 import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table'
 import { BLOB_URI, REQ } from '../../util/constants'
 import './resource.css'
+import naVideo from '../../raw/na-video.jpg'
 
 class Video extends React.Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            banner_src: "/raw/na-image.jpg",
+            banner_src: naVideo,
             video_src: ""
         }
     }

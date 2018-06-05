@@ -8,7 +8,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <Router>
+            <Router basename="/ngo/frontend">
                 <div>
                     <Route exact path="/" component={Login} />
                     <Route path="/resource" component={ResourceManager} />

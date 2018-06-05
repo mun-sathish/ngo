@@ -9,19 +9,19 @@ export default class CustomNavbar extends Component {
       <Navbar default collapseOnSelect>
         <Navbar.Header>
           <Navbar.Brand>
-            <Link to="/resource/home">Awaken Yourself Within You</Link>
+            <Link to="/home">Awaken Yourself Within You</Link>
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav pullRight>
-            <NavItem eventKey={1} componentClass={Link} href="/resource/book" to="/resource/book">
+            <NavItem eventKey={1} componentClass={Link} href="/book" to="/book">
               Book
             </NavItem>
-            <NavItem eventKey={2} componentClass={Link} href="/resource/video" to="/resource/video">
+            <NavItem eventKey={2} componentClass={Link} href="/video" to="/video">
               Video
             </NavItem>
-            <NavItem eventKey={3} componentClass={Link} href="/resource/audio" to="/resource/audio">
+            <NavItem eventKey={3} componentClass={Link} href="/audio" to="/audio">
               Audio
             </NavItem>
             <NavItem eventKey={3} componentClass={Link} href="/security-question" to="/security-question">
