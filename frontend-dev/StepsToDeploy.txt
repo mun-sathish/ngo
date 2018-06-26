@@ -1,0 +1,22 @@
+1. Create a Production Build
+    $ npm run build 
+2. Deploy it in local folder "frontend"
+    $ npm run deploy
+3. Open "frontend" in visual studio code
+4. Edit "index.html" of the below lines:
+    - "/static" to "./static" (2 times)
+    - "/manifest" to "./manifest"
+    - "/favicon" to "./favicon"
+5. Edit .js file in "static/js/" as below
+    - Check the "static/media/" folder which contains media files
+    - search for those file names in js folder
+    - replace "n.p+'/static/'.." to "./static"
+    - repeat same for other media file names
+
+6. Create a file ".htaccess" inside folder where index.html present & copy and paste below code
+
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule ^ index.html [L]

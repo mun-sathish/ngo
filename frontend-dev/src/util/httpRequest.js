@@ -1,6 +1,5 @@
 export default function sendReq(uri, reqMethod, reqData) {
     console.log("URL: " + uri + ", Method: " + reqMethod)
-    console.log(reqData);
 
     if (reqMethod === "get") {
         return fetch(uri, {
@@ -17,6 +16,7 @@ export default function sendReq(uri, reqMethod, reqData) {
             })
     }
     else {
+        console.log(reqData);
         return fetch(uri, {
             method: reqMethod,
             headers: {

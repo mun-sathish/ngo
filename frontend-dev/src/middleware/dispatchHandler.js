@@ -1,19 +1,28 @@
 import sendReq from '../util/httpRequest'
-import { ACTION, REQ } from '../util/constants'
+import { ACTION, REQ } from '../util/Constant'
+import { loginActions } from '../action';
 
 const dispatchHandler = store => next => action => {
-    // console.log("pre dispatch: " + action);
     switch (action.type) {
-        
-        case ACTION.USER_LOGIN:
+
+        case ACTION.LOGOUT:
+            return next(action);
+
+        case ACTION.LOGIN_SUCCESS:
+            return next(action);
+
+        case ACTION.LOGIN_FAILURE:
+            return next(action);
+
+        case ACTION.LOGIN_REQUEST:
             sendReq(REQ.USER_LOGIN.URI, REQ.USER_LOGIN.METHOD, action.payload)
                 .then((jsonResponse) => {
-                    console.log("inside disapather")
-                    console.log(jsonResponse);
-                    action.payload = jsonResponse;
-                    return next(action);
+                    store.dispatch(loginActions.loginSuccess(jsonResponse))
+                }).catch((err) => {
+                    store.dispatch(loginActions.loginFailure())
                 });
-            break;
+            return next(action);
+
 
         // RESOURCES
         case ACTION.BOOK_UPDATE:
@@ -77,6 +86,18 @@ const dispatchHandler = store => next => action => {
                 })
             break;
 
+        case ACTION.TASK_DELETE:
+            sendReq(REQ.TASK_DELETE.URI, REQ.TASK_DELETE.METHOD, action.payload)
+                .then(jsonResponse => {
+                    sendReq(REQ.TASK_ALL.URI, REQ.TASK_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.TASK
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
+                })
+            break;
+
         case ACTION.VIDEO_DELETE:
             sendReq(REQ.VIDEO_DELETE.URI, REQ.VIDEO_DELETE.METHOD, action.payload)
                 .then(jsonResponse => {
@@ -103,6 +124,13 @@ const dispatchHandler = store => next => action => {
                 })
             break;
 
+        case ACTION.TASK_ADD:
+            sendReq(REQ.TASK_ADD.URI, REQ.TASK_ADD.METHOD, action.payload)
+                .then(jsonResponse => {
+                    return next(action)
+                })
+            break;
+
         case ACTION.VIDEO_ADD:
             sendReq(REQ.VIDEO_ADD.URI, REQ.VIDEO_ADD.METHOD, action.payload)
                 .then(jsonResponse => {
@@ -113,6 +141,7 @@ const dispatchHandler = store => next => action => {
         case ACTION.BOOK:
             sendReq(REQ.BOOK_ALL.URI, REQ.BOOK_ALL.METHOD, null)
                 .then(jsonResponse => {
+                    console.log(jsonResponse)
                     action.payload = jsonResponse
                     return next(action)
                 })
@@ -126,6 +155,14 @@ const dispatchHandler = store => next => action => {
                 })
             break;
 
+        case ACTION.TASK:
+            sendReq(REQ.TASK_ALL.URI, REQ.TASK_ALL.METHOD, null)
+                .then(jsonResponse => {
+                    action.payload = jsonResponse
+                    return next(action)
+                })
+            break;
+
         case ACTION.VIDEO:
             sendReq(REQ.VIDEO_ALL.URI, REQ.VIDEO_ALL.METHOD, null)
                 .then(jsonResponse => {
@@ -133,6 +170,7 @@ const dispatchHandler = store => next => action => {
                     return next(action)
                 })
             break;
+
         // SECUIRTY_QUESTION
         case ACTION.SQ:
             sendReq(REQ.SQ_ALL.URI, REQ.SQ_ALL.METHOD, null)
@@ -145,14 +183,24 @@ const dispatchHandler = store => next => action => {
         case ACTION.SQ_ADD:
             sendReq(REQ.SQ_ADD.URI, REQ.SQ_ADD.METHOD, action.payload)
                 .then(jsonResponse => {
-                    return next(action)
+                    sendReq(REQ.SQ_ALL.URI, REQ.SQ_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.SQ
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
                 })
             break;
 
         case ACTION.SQ_DELETE:
-            sendReq(REQ.SQ_DELETE.URI + action.payload, REQ.SQ_DELETE.METHOD, null)
+            sendReq(REQ.SQ_DELETE.URI, REQ.SQ_DELETE.METHOD, action.payload)
                 .then(jsonResponse => {
-                    return next(action)
+                    sendReq(REQ.SQ_ALL.URI, REQ.SQ_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.SQ
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
                 })
             break;
         default:
