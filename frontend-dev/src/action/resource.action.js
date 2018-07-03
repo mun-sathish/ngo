@@ -5,11 +5,36 @@ export const resourceActions = {
     fetchAllAudio,
     fetchAllVideo,
     fetchAllTask,
+    fetchAllUser,
     deleteBook,
     deleteAudio,
     deleteVideo,
     deleteTask,
+    deleteUser,
+    updateUserPremium
 };
+
+function fetchAllUser(){
+    return {
+        type: ACTION.USER
+    }
+}
+
+function updateUserPremium(user) {
+    return {
+        type: ACTION.USER_UPDATE_PREMIUM,
+        payload: user
+    }
+}
+
+function deleteUser(username) {
+    return {
+        type: ACTION.USER_DELETE,
+        payload: {
+            username: username
+        }
+    }
+}
 
 function fetchAllBooks() {
     return {

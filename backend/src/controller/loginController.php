@@ -1,9 +1,6 @@
 <?php
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-require '../src/util/statusOutputUtil.php';
-require '../src/util/statusVariables.php';
-
 
 /*
 // User Signup
@@ -32,28 +29,8 @@ $app->post('/api/user/sign-up', function (Request $request, Response $response) 
     }
 
     $sql = "INSERT INTO user_login (username, name, password, security_question, security_question_answer, phone, email) VALUES
-    (:username, :name, :password, :security_question, :security_question_answer, :phone, :email)";
-
-    try {
-        // Get DB Object
-        $db = new databaseConnector();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(':username', $username);
-        $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':password', $password);
-        $stmt->bindParam(':security_question', $securityQuestion);
-        $stmt->bindParam(':security_question_answer', $securityQuestionAnswer);
-        $stmt->bindParam(':phone', $phone);
-        $stmt->bindParam(':email', $email);
-
-        $stmt->execute();
-        return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_SIGNUP);
-
-    } catch (PDOException $e) {
-        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
-    }
+    ('$username', '$name', '$password', '$securityQuestion', '$securityQuestionAnswer', '$phone', '$email')";
+    return postRequest($sql, STATUS::$_M_SUCCESS_SIGNUP);
 });
 
 // User Update
@@ -131,6 +108,24 @@ $app->post('/api/user/update', function (Request $request, Response $response) {
     }
 });
 
+// Admin Sign In
+$app->post('/api/admin/sign-in', function (Request $request, Response $response) {
+
+    $username = $request->getParam('username');
+    $password = $request->getParam('password');
+
+    if ($username === null || $password === null) {
+        return $response->write(showOutput(STATUS::$_C_SIGNIN_FAILURE_INPUT_UNAVAILABLE, STATUS::$_M_INPUT_UNAVAILABLE));
+    }
+
+    if( ($username === "admin" && $password === "q0x4MWTYv3gn") ){
+        return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_SIGNIN);
+    } else {
+        return showOutput(STATUS::$_C_SIGNIN_FAILURE_INVALID_CRED, STATUS::$_M_SIGNIN_FAILURE_INVALID_CRED);
+    }
+
+});
+
 //User Sign In
 $app->post('/api/user/sign-in', function (Request $request, Response $response) {
 
@@ -142,23 +137,7 @@ $app->post('/api/user/sign-in', function (Request $request, Response $response) 
     }
 
     $sql = "SELECT * FROM user_login where username = '$username' and password ='$password'";
-
-    try {
-        // Get DB Object
-        $db = new databaseConnector();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->query($sql);
-        $res = $stmt->fetchAll(PDO::FETCH_OBJ);
-        if (!isset($res[0])) {
-            return $response->write(showOutput(STATUS::$_C_SIGNIN_FAILURE_INVALID_CRED, STATUS::$_M_SIGNIN_FAILURE_INVALID_CRED));
-        } else {
-            return $response->write(showOutputWithRes(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_SIGNIN, $res[0]));
-        }
-
-    } catch (PDOException $e) {
-        return $response->write(showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage()));
-    }
+    return handleLoginVerfication($sql, STATUS::$_M_SUCCESS_SIGNIN, STATUS::$_M_SIGNIN_FAILURE_INVALID_CRED, true);
 });
 
 //User Name Validation
@@ -171,24 +150,9 @@ $app->post('/api/user/name', function (Request $request, Response $response) {
     }
 
     $sql = "SELECT * FROM user_login where username = '$username'";
-
-    try {
-        // Get DB Object
-        $db = new databaseConnector();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->query($sql);
-        $res = $stmt->fetchAll(PDO::FETCH_OBJ);
-        if (!isset($res[0])) {
-            return $response->write(showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SIGNUP_USERNAME_NOT_AVAILABLE));
-        } else {
-            return $response->write(showOutputWithRes(STATUS::$_C_SIGNUP_USERNAME_NOT_AVAILABLE, STATUS::$_M_SIGNUP_USERNAME_AVAILABLE, $res[0]));
-        }
-
-    } catch (PDOException $e) {
-        return $response->write(showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage()));
-    }
+    return handleLoginVerfication($sql, STATUS::$_M_SIGNUP_USERNAME_NOT_AVAILABLE, STATUS::$_M_SIGNUP_USERNAME_AVAILABLE, false);
 });
+
 
 // Get All Secuity Questions
 $app->get('/api/security-question', function (Request $request, Response $response) {
@@ -208,7 +172,7 @@ $app->get('/api/security-question/{id}', function (Request $request, Response $r
 $app->post('/api/security-question/add', function (Request $request, Response $response) {
     $question = $request->getParam('question');
     $sql = "INSERT INTO security_question (question) VALUES ('$question')";
-    return addOrDeleteReq($sql, true);
+    return postRequest($sql, STATUS::$_M_SUCCESS_ADDED);
 
 });
 
@@ -216,5 +180,5 @@ $app->post('/api/security-question/add', function (Request $request, Response $r
 $app->post('/api/security-question/delete', function (Request $request, Response $response) {
     $id = $request->getParam('security_question_id');
     $sql = "DELETE FROM security_question WHERE security_question_id = $id";
-    return addOrDeleteReq($sql, false);
+    return postRequest($sql, STATUS::$_M_SUCCESS_DELETE);
 });

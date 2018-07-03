@@ -15,7 +15,7 @@ const dispatchHandler = store => next => action => {
             return next(action);
 
         case ACTION.LOGIN_REQUEST:
-            sendReq(REQ.USER_LOGIN.URI, REQ.USER_LOGIN.METHOD, action.payload)
+            sendReq(REQ.ADMIN_LOGIN.URI, REQ.ADMIN_LOGIN.METHOD, action.payload)
                 .then((jsonResponse) => {
                     store.dispatch(loginActions.loginSuccess(jsonResponse))
                 }).catch((err) => {
@@ -25,6 +25,18 @@ const dispatchHandler = store => next => action => {
 
 
         // RESOURCES
+        case ACTION.USER_UPDATE_PREMIUM:
+            sendReq(REQ.USER_UPDATE_PREMIUM.URI, REQ.USER_UPDATE_PREMIUM.METHOD, action.payload)
+                .then(jsonResponse => {
+                    sendReq(REQ.USER_ALL.URI, REQ.USER_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.USER
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
+                })
+            break;
+
         case ACTION.BOOK_UPDATE:
             sendReq(REQ.BOOK_UPDATE.URI, REQ.BOOK_UPDATE.METHOD, action.payload)
                 .then(jsonResponse => {
@@ -60,6 +72,18 @@ const dispatchHandler = store => next => action => {
                         })
                 })
 
+            break;
+
+        case ACTION.USER_DELETE:
+            sendReq(REQ.USER_DELETE.URI, REQ.USER_DELETE.METHOD, action.payload)
+                .then(jsonResponse => {
+                    sendReq(REQ.USER_ALL.URI, REQ.USER_ALL.METHOD, null)
+                        .then(jsonResponse => {
+                            action.type = ACTION.USER
+                            action.payload = jsonResponse
+                            return next(action)
+                        })
+                })
             break;
 
         case ACTION.BOOK_DELETE:
@@ -134,6 +158,14 @@ const dispatchHandler = store => next => action => {
         case ACTION.VIDEO_ADD:
             sendReq(REQ.VIDEO_ADD.URI, REQ.VIDEO_ADD.METHOD, action.payload)
                 .then(jsonResponse => {
+                    return next(action)
+                })
+            break;
+
+        case ACTION.USER:
+            sendReq(REQ.USER_ALL.URI, REQ.USER_ALL.METHOD, null)
+                .then(jsonResponse => {
+                    action.payload = jsonResponse
                     return next(action)
                 })
             break;

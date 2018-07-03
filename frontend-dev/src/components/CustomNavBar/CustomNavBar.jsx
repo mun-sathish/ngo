@@ -16,6 +16,9 @@ class CustomNavbar extends Component {
         </Navbar.Header>
         <Navbar.Collapse>
           <Nav pullRight>
+            <NavItem eventKey={6} componentClass={Link} href={BACKEND.USER_URL} to={BACKEND.USER_URL}>
+              User
+            </NavItem>
             <NavItem eventKey={1} componentClass={Link} href={BACKEND.BOOK_URL} to={BACKEND.BOOK_URL}>
               Book
             </NavItem>

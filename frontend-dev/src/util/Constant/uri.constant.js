@@ -6,6 +6,7 @@ export const BLOB_URI = {
     AUDIO_BANNER: BASE + "/audio/banner/",
     AUDIO_FILE: BASE + "/audio/file/",
     BOOK_BANNER: BASE + "/book/banner/",
+    BOOK_FILE: BASE + "/book/file/",
     TASK_FILE: BASE + "/task/file/"
 }
 
@@ -17,5 +18,6 @@ export const BACKEND = {
     VIDEO_URL: BACKEND_BASE_URL + "/video",
     TASK_URL: BACKEND_BASE_URL + "/task",
     BOOK_URL: BACKEND_BASE_URL + "/book",
+    USER_URL: BACKEND_BASE_URL + "/user",
     SQ_URL: BACKEND_BASE_URL + "/security-question"
 }

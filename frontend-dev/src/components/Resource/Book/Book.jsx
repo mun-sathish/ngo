@@ -23,24 +23,23 @@ class Book extends React.Component {
     changeBanner = (fileVar) => {
         let temp = fileVar.name.split(".").pop().toLowerCase()
         let allowedFormat = ["png", "jpg", "jpeg"]
-
-        let reader = new FileReader();
-        reader.readAsDataURL(fileVar);
-        let me = this
-        reader.onload = function () {
-            var fileContent = reader.result;
-
-            if (allowedFormat.indexOf(temp) === -1)
-                alert("Select Image of Jpeg, Png, Jpg ")
-            else {
-                me.setState({ banner_src: fileContent })
-            }
+        if (allowedFormat.indexOf(temp) === -1)
+            alert("Select Image of Jpeg, Png, Jpg ")
+        else {
+            this.setState({ banner_src: URL.createObjectURL(fileVar) })
         }
+    }
+
+    changeFile = (fileVar) => {
+        let temp = fileVar.name.split(".").pop().toLowerCase()
+        let allowedFormat = ["pdf"]
+        if (allowedFormat.indexOf(temp) === -1)
+            alert("Select a PDF document ")
     }
 
 
     handleClick = (obj) => {
-        this.props.deleteBook({ book_id: obj.book_id, banner: obj.banner });
+        this.props.deleteBook({ book_id: obj.book_id, banner: obj.banner, file: obj.file });
     }
 
     linkCell = (cell, row) => {
@@ -58,6 +57,12 @@ class Book extends React.Component {
     imageCell = (cell, row) => {
         return (
             <Image src={BLOB_URI.BOOK_BANNER + cell} height="100" />
+        )
+    }
+
+    pdfCell = (cell, row) => {
+        return (
+            <a target="_blank" href={BLOB_URI.BOOK_FILE + cell}>{cell}</a>
         )
     }
 
@@ -88,37 +93,11 @@ class Book extends React.Component {
                                         />
                                     </Col>
                                     <Col xs={12} md={6}>
-                                        <ControlLabel>ISBN</ControlLabel>
+                                        <ControlLabel>Genre</ControlLabel>
                                         <FormControl
                                             type="text"
-                                            name="isbn"
-                                            placeholder="Enter ISBN"
-                                        />
-                                    </Col>
-                                    <Col xs={12} md={6}>
-                                        <ControlLabel>Publisher</ControlLabel>
-                                        <FormControl
-                                            type="text"
-                                            name="publisher"
-                                            placeholder="Enter Publisher"
-                                        />
-                                    </Col>
-
-                                    <Col xs={12} md={6}>
-                                        <ControlLabel>Edition</ControlLabel>
-                                        <FormControl
-                                            type="text"
-                                            name="edition"
-                                            placeholder="Enter Edition"
-                                        />
-                                    </Col>
-
-                                    <Col xs={12} md={6}>
-                                        <ControlLabel>Edition Number</ControlLabel>
-                                        <FormControl
-                                            type="text"
-                                            name="edition_number"
-                                            placeholder="Enter Edition No"
+                                            name="genre"
+                                            placeholder="Enter Genre"
                                         />
                                     </Col>
 
@@ -132,33 +111,6 @@ class Book extends React.Component {
                                     </Col>
 
                                     <Col xs={12} md={6}>
-                                        <ControlLabel>Binding</ControlLabel>
-                                        <FormControl
-                                            type="text"
-                                            name="binding"
-                                            placeholder="Enter Binding"
-                                        />
-                                    </Col>
-
-                                    <Col xs={12} md={6}>
-                                        <ControlLabel>Flipkart Link</ControlLabel>
-                                        <FormControl
-                                            type="text"
-                                            name="flipkart_link"
-                                            placeholder="Enter Flipkart Link"
-                                        />
-                                    </Col>
-
-                                    <Col xs={12} md={6}>
-                                        <ControlLabel>Amazon Link</ControlLabel>
-                                        <FormControl
-                                            type="text"
-                                            name="amazon_link"
-                                            placeholder="Enter Amazon Link"
-                                        />
-                                    </Col>
-
-                                    <Col xs={12} md={6}>
                                         <Col>
                                             <ControlLabel>Banner (Jpg, Jpeg, Png)</ControlLabel>
                                         </Col>
@@ -168,12 +120,26 @@ class Book extends React.Component {
                                                 type="file"
                                                 name="banner"
                                                 accept="image/jpeg, image/png, image/jpg"
-                                                className="inputfile"
                                                 onChange={(e) => this.changeBanner(e.target.files[0])}
                                             />
-                                            <label for="banner"><strong>Choose a file</strong></label>
                                         </Col>
                                     </Col>
+
+                                    <Col xs={12} md={6}>
+                                        <Col>
+                                            <ControlLabel>PDF Document</ControlLabel>
+                                        </Col>
+                                        <Col>
+                                            <FormControl
+                                                id="file"
+                                                type="file"
+                                                name="file"
+                                                accept="application/pdf"
+                                                onChange={(e) => this.changeFile(e.target.files[0])}
+                                            />
+                                        </Col>
+                                    </Col>
+
                                     <Col xs={12}>
                                         <Button type="submit" bsStyle="primary">Submit</Button>
                                     </Col>
@@ -203,20 +169,15 @@ class Book extends React.Component {
                     </Row>
                     <Row>
                         <Col xs={12}>
-                            <BootstrapTable data={this.props.books} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination>
+                            <BootstrapTable data={this.props.books} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination search>
                                 <TableHeaderColumn width='100' dataAlign="center" dataFormat={this.deleteCell} />
                                 <TableHeaderColumn width='100' dataField='book_id' isKey hidden>ID</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='name' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} >Name</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='author' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Author</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='isbn' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>ISBN</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='publisher' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Publisher</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='edition' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Edition</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='edition_number' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Edition Number</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='no_of_pages' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>No of Pages</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='binding' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Binding</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='flipkart_link' dataAlign="center" dataFormat={this.linkCell} tdStyle={{ whiteSpace: 'normal' }}>Flipkart Link</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='amazon_link' dataAlign="center" dataFormat={this.linkCell} tdStyle={{ whiteSpace: 'normal' }}>Amazon Link</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='name' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} >Name</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='author' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Author</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='genre' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Genre</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='no_of_pages' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>No of Pages</TableHeaderColumn>
                                 <TableHeaderColumn width='150' dataField='banner' dataAlign="center" dataFormat={this.imageCell}  >Banner </TableHeaderColumn>
+                                <TableHeaderColumn width='150' dataField='file' dataAlign="center" dataFormat={this.pdfCell}  >PDF Link</TableHeaderColumn>
                             </BootstrapTable>
                         </Col>
                     </Row>

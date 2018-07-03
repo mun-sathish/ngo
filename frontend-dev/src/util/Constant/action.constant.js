@@ -5,6 +5,10 @@ export const ACTION = {
     LOGOUT: "user_logout",
     USER_LOGIN: "user_login",
     
+    USER: "user",
+    USER_UPDATE_PREMIUM: "user_update_premium",
+    USER_DELETE: "user_delete",
+
     SQ: "security_question",
     SQ_ADD: "security_question_add",
     SQ_UPDATE: "security_question_update",

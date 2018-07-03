@@ -8,6 +8,7 @@ import { BACKEND } from "../../util/Constant";
 import { PrivateRoute } from '../PrivateRoute'
 import { NotFound } from "../NotFound/NotFound";
 import { Book, Video, Audio, Task, SQ } from '../Resource'
+import { User } from "../Resource/User/User";
 
 class App extends React.Component {
 
@@ -19,6 +20,7 @@ class App extends React.Component {
                 <Switch>
                     <Route path={BACKEND.LOGIN_URL} component={Login} />
                     <PrivateRoute exact path={BACKEND.RESOURCE_URL} component={Resource} />
+                    <PrivateRoute path={BACKEND.USER_URL} component={User} />
                     <PrivateRoute path={BACKEND.BOOK_URL} component={Book} />
                     <PrivateRoute path={BACKEND.AUDIO_URL} component={Audio} />
                     <PrivateRoute path={BACKEND.VIDEO_URL} component={Video} />

@@ -4,6 +4,14 @@ export const REQ = {
         URI: BASE_URI + "/user/sign-in",
         METHOD: "post"
     },
+    ADMIN_LOGIN: {
+        URI: BASE_URI + "/admin/sign-in",
+        METHOD: "post"
+    },
+    USER_UPDATE_PREMIUM: {
+        URI: BASE_URI + "/resource/user/premium-update",
+        METHOD: "post"
+    },
     BOOK_UPDATE: {
         URI: BASE_URI + "/resource/book/update",
         METHOD: "post"
@@ -14,6 +22,10 @@ export const REQ = {
     },
     VIDEO_UPDATE: {
         URI: BASE_URI + "/resource/video/update",
+        METHOD: "post"
+    },
+    USER_DELETE: {
+        URI: BASE_URI + "/resource/user/delete",
         METHOD: "post"
     },
     BOOK_DELETE: {
@@ -51,6 +63,10 @@ export const REQ = {
         URI: BASE_URI + "/resource/video/add",
         METHOD: "post",
         enctype: "multipart/form-data"
+    },
+    USER_ALL: {
+        URI: BASE_URI + "/resource/user",
+        METHOD: "get"
     },
     BOOK_ALL: {
         URI: BASE_URI + "/resource/book",

@@ -172,12 +172,12 @@ class Task extends React.Component {
                     </Row>
                     <Row>
                         <Col xs={12}>
-                            <BootstrapTable data={this.props.task} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination>
+                            <BootstrapTable data={this.props.task} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination search>
                                 <TableHeaderColumn width='100' dataAlign="center" dataFormat={this.deleteCell} />
                                 <TableHeaderColumn width='100' dataField='task_id' isKey hidden>ID</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='title' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} >Title</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='description' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} dataFormat={this.textCell} >Description</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='is_premium' dataAlign="center" dataFormat={this.checkboxCell} >Is Premium?  </TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='title' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} >Title</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='description' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} dataFormat={this.textCell} >Description</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='is_premium' dataAlign="center" dataFormat={this.checkboxCell} >Is Premium?  </TableHeaderColumn>
                                 <TableHeaderColumn width='150' dataField='file' dataAlign="center" dataFormat={this.imageCell}  >Images </TableHeaderColumn>
 
                             </BootstrapTable>

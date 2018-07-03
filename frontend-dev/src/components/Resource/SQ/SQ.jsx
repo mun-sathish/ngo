@@ -68,10 +68,10 @@ class SQ extends React.Component {
                     </Row>
                     <Row>
                         <Col xs={12}>
-                            <BootstrapTable data={this.props.sq} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination>
+                            <BootstrapTable data={this.props.sq} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination search>
                                 <TableHeaderColumn width='100' dataAlign="center" dataFormat={this.deleteCell} />
-                                <TableHeaderColumn isKey width='100' dataField='security_question_id' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>ID</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='question' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Security Question</TableHeaderColumn>
+                                <TableHeaderColumn isKey width='100' dataSort dataField='security_question_id' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>ID</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='question' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Security Question</TableHeaderColumn>
 
                             </BootstrapTable>
                         </Col>

@@ -24,36 +24,21 @@ class Audio extends React.Component {
     changeFile = (fileVar) => {
         let temp = fileVar.name.split(".").pop().toLowerCase()
         let allowedFormat = ["mp3"]
-
-        let reader = new FileReader();
-        reader.readAsDataURL(fileVar);
-        let me = this
-        reader.onload = function () {
-            var fileContent = reader.result;
-            if (allowedFormat.indexOf(temp) === -1)
-                alert("Select Audio of Mp3 ")
-            else {
-                me.setState({ audio_src: fileContent })
-            }
+        if (allowedFormat.indexOf(temp) === -1)
+            alert("Select Audio of Mp3 ")
+        else {
+            this.setState({ audio_src: URL.createObjectURL(fileVar) })
         }
+
     }
 
     changeBanner = (fileVar) => {
         let temp = fileVar.name.split(".").pop().toLowerCase()
         let allowedFormat = ["png", "jpg", "jpeg"]
-
-        let reader = new FileReader();
-        reader.readAsDataURL(fileVar);
-        let me = this
-        // me.setState({ src: URL.createObjectURL(e.target.files[0]) })
-        reader.onload = function () {
-            var fileContent = reader.result;
-
-            if (allowedFormat.indexOf(temp) === -1)
-                alert("Select Image of Jpeg, Png, Jpg ")
-            else {
-                me.setState({ banner_src: fileContent })
-            }
+        if (allowedFormat.indexOf(temp) === -1)
+            alert("Select Image of Jpeg, Png, Jpg ")
+        else {
+            this.setState({ banner_src: URL.createObjectURL(fileVar) })
         }
     }
 
@@ -67,7 +52,7 @@ class Audio extends React.Component {
             return (<Checkbox checked={true} ></Checkbox>)
         else
             return (<Checkbox checked={false} ></Checkbox>)
-            
+
     }
 
     imageCell = (cell, row) => {
@@ -78,7 +63,10 @@ class Audio extends React.Component {
 
     audioCell = (cell, row) => {
         return (
-            <audio controls="true" width="150" src={BLOB_URI.AUDIO_FILE + cell}></audio>
+            <div>
+                <h5>File Name: {cell}</h5><br /><br />
+                <audio controls="true" width="150" src={BLOB_URI.AUDIO_FILE + cell}></audio>
+            </div>
         )
     }
 
@@ -130,7 +118,7 @@ class Audio extends React.Component {
                                             placeholder="Enter Speaker"
                                         />
                                     </Col>
-                                    
+
                                     <Col xs={12} md={4}>
                                         <Col>
                                             <ControlLabel>Banner (Jpg, Jpeg, Png)</ControlLabel>
@@ -171,10 +159,10 @@ class Audio extends React.Component {
                                                 name="is_premium"
                                                 value="1"
                                             />
-                                            </ControlLabel>
+                                        </ControlLabel>
                                     </Col>
                                     <Col xs={12}>
-                                    <Button type="submit" bsStyle="primary">Submit</Button>
+                                        <Button type="submit" bsStyle="primary">Submit</Button>
                                     </Col>
                                 </FormGroup>
 
@@ -209,14 +197,14 @@ class Audio extends React.Component {
                     </Row>
                     <Row>
                         <Col xs={12}>
-                            <BootstrapTable data={this.props.audio} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination>
+                            <BootstrapTable data={this.props.audio} stripped hover condensed options={{ noDataText: 'There is no data to display' }} pagination search>
                                 <TableHeaderColumn width='100' dataAlign="center" dataFormat={this.deleteCell} />
                                 <TableHeaderColumn width='100' dataField='audio_id' isKey hidden>ID</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='title' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} >Title</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='author' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Author</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='genre' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Genre</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='speaker' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Speaker</TableHeaderColumn>
-                                <TableHeaderColumn width='100' dataField='is_premium' dataAlign="center" dataFormat={this.checkboxCell} >Is Premium?  </TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='title' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }} >Title</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='author' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Author</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='genre' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Genre</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='speaker' dataAlign="center" tdStyle={{ whiteSpace: 'normal' }}>Speaker</TableHeaderColumn>
+                                <TableHeaderColumn width='100' dataSort dataField='is_premium' dataAlign="center" dataFormat={this.checkboxCell} >Is Premium?  </TableHeaderColumn>
                                 <TableHeaderColumn width='150' dataField='banner' dataAlign="center" dataFormat={this.imageCell}  >Banner </TableHeaderColumn>
                                 <TableHeaderColumn width='350' dataField='file' dataAlign="center" dataFormat={this.audioCell} >Audio</TableHeaderColumn>
 

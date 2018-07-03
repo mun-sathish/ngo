@@ -3,53 +3,20 @@ use Slim\Http\UploadedFile;
 use \Psr\Http\Message\ResponseInterface as Response;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 require '../src/util/pathVariables.php';
+require '../src/util/handleRequestUtil.php';
 
-function getRequest($sql, $isById)
-{
-    try {
-        // Get DB Object
-        $db = new databaseConnector();
-        // Connect
-        $db = $db->connect();
-        $stmt = $db->query($sql);
-        $res = $stmt->fetchAll(PDO::FETCH_OBJ);
-        $db = null;
-        if ($isById) {
-            if (!isset($res[0])) {
-                return "{}";
-            } else {
-                return json_encode($res[0]);
-            }
-        } else {
-            return json_encode($res);
-        }
 
-    } catch (PDOException $e) {
-        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
-    }
-}
+// Get All DB Variables
+$app->get('/api/db-variable', function (Request $request, Response $response) {
+    $sql = "SELECT *  FROM static_variable";
+    return getRequest($sql, false);
+});
 
-function addOrDeleteReq($sql, $isAddReq)
-{
-    try {
-        // Get DB Object
-        $db = new databaseConnector();
-        // Connect
-        $db = $db->connect();
-
-        $stmt = $db->prepare($sql);
-
-        $stmt->execute();
-        if ($isAddReq) {
-            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_UPDATED);
-        } else {
-            return showOutput(STATUS::$_C_SUCCESS, STATUS::$_M_SUCCESS_DELETE);
-        }
-
-    } catch (PDOException $e) {
-        return showOutput(STATUS::$_C_PDOEXCEPTION, STATUS::$_M_PDOEXCEPTION . $e->getMessage());
-    }
-}
+// Get All Users
+$app->get('/api/resource/user', function (Request $request, Response $response) {
+    $sql = "SELECT username, name, phone, email, is_premium, premium_expiry_timestamp  FROM user_login";
+    return getRequest($sql, false);
+});
 
 // Get All Books
 $app->get('/api/resource/book', function (Request $request, Response $response) {
@@ -124,7 +91,7 @@ $app->post('/api/resource/audio/add', function (Request $request, Response $resp
 
                 $sql = "INSERT INTO audio (title, author, speaker, genre,  is_premium, banner, file) VALUES ('$title', '$author', '$speaker', '$genre', '$is_premium', '$bannername', '$filename')";
 
-                return addOrDeleteReq($sql, true);
+                return postRequest($sql, STATUS::$_M_SUCCESS_ADDED);
             }
         }
     } catch (Exception $e) {
@@ -155,7 +122,7 @@ $app->post('/api/resource/video/add', function (Request $request, Response $resp
 
                 $sql = "INSERT INTO video (title, author, genre, cast,  is_premium, banner, file) VALUES ('$title', '$author', '$genre', '$cast', '$is_premium', '$bannername', '$filename')";
 
-                return addOrDeleteReq($sql, true);
+                return postRequest($sql, STATUS::$_M_SUCCESS_ADDED);
             }
         }
     } catch (Exception $e) {
@@ -169,26 +136,23 @@ $app->post('/api/resource/book/add', function (Request $request, Response $respo
 
     $name = $request->getParam('name');
     $author = $request->getParam('author');
-    $isbn = $request->getParam('isbn');
-    $publisher = $request->getParam('publisher');
-    $edition = $request->getParam('edition');
-    $edition_number = $request->getParam('edition_number');
+    $genre = $request->getParam('genre');
     $no_of_pages = $request->getParam('no_of_pages');
-    $binding = $request->getParam('binding');
-    $flipkart_link = $request->getParam('flipkart_link');
-    $amazon_link = $request->getParam('amazon_link');
     $uploadedFiles = $request->getUploadedFiles();
 
-
+    
     try {
-        if (!empty($uploadedFiles['banner'])) {
+        if (!empty($uploadedFiles['banner'])  && !empty($uploadedFiles['file'])) {
             $uploadedBanner = $uploadedFiles['banner'];
-            if ($uploadedBanner->getError() === UPLOAD_ERR_OK) {
+            $uploadedFile = $uploadedFiles['file'];
+            if ($uploadedBanner->getError() === UPLOAD_ERR_OK
+            && $uploadedFile->getError() === UPLOAD_ERR_OK) {
                 $bannername = moveUploadedFile(PATH::$BASE_PATH . PATH::$BOOK_BANNER, $uploadedBanner);
+                $filename = moveUploadedFile(PATH::$BASE_PATH . PATH::$BOOK_FILE, $uploadedFile);
 
-                $sql = "INSERT INTO book (name, author, isbn, publisher, edition, edition_number, no_of_pages, binding, flipkart_link, amazon_link, banner) VALUES ('$name',  '$author',  '$isbn',  '$publisher',  '$edition',  '$edition_number',  '$no_of_pages',  '$binding',  '$flipkart_link',  '$amazon_link',  '$bannername')";
+                $sql = "INSERT INTO book (name, author, genre, no_of_pages, banner, file) VALUES ('$name',  '$author',  '$genre',  '$no_of_pages',  '$bannername', '$filename')";
 
-                return addOrDeleteReq($sql, true);
+                return postRequest($sql, STATUS::$_M_SUCCESS_ADDED);
             }
         }
     } catch (Exception $e) {
@@ -222,7 +186,7 @@ $app->post('/api/resource/task/add', function (Request $request, Response $respo
 
             $sql = "INSERT INTO task (title, description, is_premium, file) VALUES ('$title', '$description', '$is_premium', '$finalFileName')";
 
-            return addOrDeleteReq($sql, true);
+            return postRequest($sql, STATUS::$_M_SUCCESS_ADDED);
         }
     } catch (Exception $e) {
         return showOutput(STATUS::$_C_GENERAL_EXCEPTION, STATUS::$_M_GENERAL_EXCEPTION . $e->getMessage());
@@ -230,6 +194,13 @@ $app->post('/api/resource/task/add', function (Request $request, Response $respo
     return showOutput(STATUS::$_C_RESOURCE_INPUT_UNAVAILABLE, STATUS::$_M_INPUT_UNAVAILABLE);
 });
 
+// Delete User By Username
+$app->post('/api/resource/user/delete', function (Request $request, Response $response) {
+    $username = $request->getParam('username');
+    
+    $sql = "DELETE FROM user_login WHERE username = '$username'";
+    return postRequest($sql, STATUS::$_M_SUCCESS_DELETE);
+});
 
 // Delete Audio By ID
 $app->post('/api/resource/audio/delete', function (Request $request, Response $response) {
@@ -246,7 +217,7 @@ $app->post('/api/resource/audio/delete', function (Request $request, Response $r
         unlink($file);
     
     $sql = "DELETE FROM audio WHERE audio_id = $id";
-    return addOrDeleteReq($sql, false);
+    return postRequest($sql, STATUS::$_M_SUCCESS_DELETE);
 });
 
 // Delete Video By ID
@@ -264,21 +235,25 @@ $app->post('/api/resource/video/delete', function (Request $request, Response $r
         unlink($file);
 
     $sql = "DELETE FROM video WHERE video_id = $id";
-    return addOrDeleteReq($sql, false);
+    return postRequest($sql, STATUS::$_M_SUCCESS_DELETE);
 });
 
 // Delete Book By ID
 $app->post('/api/resource/book/delete', function (Request $request, Response $response) {
     $id = $request->getParam('book_id');
     $banner = $request->getParam('banner');
-    
+    $file = $request->getParam('file');
+
     $banner = PATH::$BASE_PATH . PATH::$BOOK_BANNER . PATH::$SLASH . $banner;
+    $file = PATH::$BASE_PATH . PATH::$BOOK_FILE . PATH::$SLASH . $file;
 
     if(file_exists($banner))
         unlink($banner);
+    if(file_exists($file))
+        unlink($file);
 
     $sql = "DELETE FROM book WHERE book_id = $id";
-    return addOrDeleteReq($sql, false);
+    return postRequest($sql, STATUS::$_M_SUCCESS_DELETE);
 });
 
 // Delete Task By ID
@@ -294,8 +269,28 @@ $app->post('/api/resource/task/delete', function (Request $request, Response $re
     }
     
     $sql = "DELETE FROM task WHERE task_id = $id";
-    return addOrDeleteReq($sql, false);
+    return postRequest($sql, STATUS::$_M_SUCCESS_DELETE);
 });
+
+// Update User Premium
+$app->post('/api/resource/user/premium-update', function (Request $request, Response $response) {
+    date_default_timezone_set('Asia/Kolkata');
+    $username = $request->getParam('username');
+    $is_premium = $request->getParam('is_premium');
+    $validity = $request->getParam('validity');
+    $premium_expiry_timestamp = date("Y-m-d H:i:s", strtotime("0000-00-00"));
+    
+    if($is_premium == 0){
+        $sql = "UPDATE user_login SET is_premium = $is_premium";
+    } else if($is_premium == 1) {
+        $d=strtotime("+".$validity." Day");
+        $premium_expiry_timestamp = date("Y-m-d H:i:s", $d);
+    }
+    
+    $sql = "UPDATE user_login SET is_premium = $is_premium, premium_expiry_timestamp = '$premium_expiry_timestamp' WHERE username = '$username'";
+    return postRequest($sql, STATUS::$_M_SUCCESS_UPDATED);
+});
+
 
 /**
  * Moves the uploaded file to the upload directory and assigns it a unique name
